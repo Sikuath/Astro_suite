@@ -7,6 +7,8 @@ from ui.sidebar import sidebar
 from ui.pages.home import show_home
 from ui.pages.project import show_project
 from tools.sho_mixer import sho_mixer
+from ui.pages.preprocessing import show_preprocessing
+from tools.test_runner import test_runner
 #from ui.pages.results import show_results
 
 
@@ -99,6 +101,9 @@ if page == "Accueil":
 elif page == "Projet":
     show_project()
 
+elif page == "Prétraitement":
+    show_preprocessing()
+
 elif page == "Traitement":
     sho_mixer()
 
@@ -112,6 +117,15 @@ else:
 # ─────────────────────────────────────
 # FOOTER
 # ─────────────────────────────────────
-st.markdown("---")
-
-st.caption("🔭 Astro Studio — pipeline astrophotographie (Siril + Streamlit)")
+st.markdown(
+    """
+    <hr>
+    <div style="text-align:center; font-size:0.85em; color:#888;">
+        © 2026 <b>Sikuath</b> — Astro Studio<br>
+        Logiciel distribué sous licence MIT.<br>
+        Les images, captures d'écran et contenus graphiques sont sous licence
+        <b>CC BY-NC-ND 4.0</b>, sauf mention contraire.
+    </div>
+    """,
+    unsafe_allow_html=True,
+)

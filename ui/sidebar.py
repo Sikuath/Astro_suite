@@ -1,11 +1,12 @@
 import streamlit as st
 
+
 def sidebar():
 
     st.sidebar.title("🔭 Astro Studio")
 
     # ─────────────────────────────
-    # PROJET ACTIF (lecture seule)
+    # PROJET ACTIF
     # ─────────────────────────────
     st.sidebar.markdown("## 📁 Projet actif")
 
@@ -41,17 +42,23 @@ def sidebar():
     # ─────────────────────────────
     st.sidebar.markdown("## 🚀 Workflow")
 
-    page = st.sidebar.radio(
-        "Aller à",
-        [
-            "Accueil",
-            "Projet",
-            "Traitement",
-            "Résultats"
-        ]
-    )
+    pages = [
+        "Accueil",
+        "Projet",
+        "Prétraitement",
+        "Traitement",
+        "Résultats"
+    ]
 
-    st.session_state["page"] = page
+    # 🔥 source unique de vérité
+    if "page" not in st.session_state:
+        st.session_state.page = "Accueil"
+
+    st.session_state.page = st.sidebar.radio(
+        "Aller à",
+        pages,
+        index=pages.index(st.session_state.page)
+    )
 
     st.sidebar.markdown("---")
 
@@ -62,7 +69,7 @@ def sidebar():
 
     st.sidebar.caption(
         "Configure ton projet dans l’onglet Projet.\n"
-        "Puis lance le traitement dans l’onglet dédié."
+        "Puis lance le pipeline dans Prétraitement."
     )
 
-    return page
+    return st.session_state.page

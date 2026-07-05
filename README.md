@@ -42,33 +42,33 @@ mon_projet/
 
 ## 🚀 Installation (mode développement)
 
-### 1. Cloner le projet
+1. Cloner le projet
 ```bash
 git clone https://github.com/Sikuath/Astro_studio.git
 cd Astro_studio
 
-### 2. Créer un environnement virtuel
+2. Créer un environnement virtuel
 ```bash
 python -m venv venv
 source venv/bin/activate   # Linux / Mac
 venv\Scripts\activate      # Windows
 
-### 3. Installer les dépendances
+3. Installer les dépendances
 ```bash
 pip install -r requirements.txt
 
 
-## ▶️ Utiliser l'application
-lancer Astro_studio.bat
+4. Utiliser l'application
+▶️lancer Astro_studio.bat
 
-⚙️ Dépendances principales
+5. Dépendances principales
 streamlit
 numpy
 scipy
 astropy (lecture FITS si utilisé)
 pillow (preview image)
 
-🎨 Palettes disponibles
+6. Palettes disponibles
 Manual
 Hubble SHO
 HOO Boost
@@ -79,14 +79,14 @@ Foraxx Pro
 Gold & Blue
 Teal & Orange
 
-💾 Export
-
+7. 💾 Export
 L’application génère :
 
 R.fit
 G.fit
 B.fit
 
+8. Divers
 aucune installation Python requise pour les utilisateurs
 🔭 Vision à long terme
 
@@ -99,3 +99,5 @@ distribution facile sous Windows
 📄 Licence
 
 MIT License © 2026
+
+© 2026 Sikuath

@@ -25,7 +25,7 @@ def show_project():
     # SIRIL
     # ─────────────────────────────
     siril = st.text_input(
-        "Chemin Siril",
+        "Chemin du fichier siril-cli.exe (ex : C:\\Program Files\\Siril\\bin\\siril-cli.exe)",
         value=config.get("siril_path", "")
     )
 

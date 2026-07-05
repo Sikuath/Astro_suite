@@ -67,3 +67,15 @@ div {
 .stSlider > div {
     color: white;
 }
+
+/* Réduit fortement la marge supérieure */
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* Si tu veux encore plus compact */
+[data-testid="stAppViewContainer"] .main .block-container {
+    padding-top: 0rem;
+    padding-bottom: 1rem;
+}
