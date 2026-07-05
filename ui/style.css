@@ -1,0 +1,33 @@
+.stApp {
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+section[data-testid="stSidebar"] {
+    background: rgba(15,18,30,0.82);
+    backdrop-filter: blur(12px);
+}
+
+.main .block-container {
+
+    background: rgba(15,18,30,0.55);
+
+    backdrop-filter: blur(8px);
+
+    border-radius: 20px;
+
+    padding: 2rem;
+
+    margin-top: 1rem;
+
+    margin-bottom: 1rem;
+}
+
+h1,h2,h3,h4,h5,h6{
+    color:white;
+}
+
+p,label,div{
+    color:#ECECEC;
+}
