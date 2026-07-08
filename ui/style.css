@@ -11,8 +11,8 @@
    SIDEBAR GLASS EFFECT
 ========================= */
 section[data-testid="stSidebar"] {
-    background: rgba(15,18,30,0.82);
-    backdrop-filter: blur(12px);
+    background: rgba(15,18,30,0.20);
+    backdrop-filter: blur(10px);
 }
 
 section[data-testid="stSidebar"] > div {
@@ -23,8 +23,8 @@ section[data-testid="stSidebar"] > div {
    MAIN CONTAINER
 ========================= */
 div.block-container {
-    background: rgba(15,18,30,0.55);
-    backdrop-filter: blur(8px);
+    background: rgba(15,18,30,0.20);
+    backdrop-filter: blur(4px);
     border-radius: 20px;
     padding: 2rem;
     margin-top: 1rem;
@@ -78,4 +78,59 @@ div {
 [data-testid="stAppViewContainer"] .main .block-container {
     padding-top: 0rem;
     padding-bottom: 1rem;
+}
+/* =========================
+   Workflow
+========================= */
+
+.workflow {
+    background: rgba(15, 23, 42, 0.92);
+    color: #f8fafc;
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 6px solid #38bdf8;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    margin-top: 15px;
+}
+
+.workflow h3 {
+    color: #38bdf8 !important;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.workflow ol {
+    color: #f8fafc !important;
+}
+
+.workflow li {
+    color: #f8fafc !important;
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.workflow b {
+    color: #facc15 !important;
+}
+/* =========================
+   TERMINAL SIRIL ASTRO
+========================= */
+
+.stCode {
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+
+.stCode pre {
+    background: transparent !important;
+}
+
+
+.stCode code {
+    color: #00ff88 !important;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
 }

@@ -4,16 +4,20 @@ import base64
 
 from ui.sidebar import sidebar
 
-from ui.pages.home import show_home
 from ui.pages.project import show_project
-from tools.sho_mixer import sho_mixer
 from ui.pages.preprocessing import show_preprocessing
-#from ui.pages.results import show_results
 
+from tools.sho_mixer import sho_mixer
+
+from ui.pages.sho_lab import show_sho_lab
+from ui.pages.aucune_luminance import show_aucune_luminance
+from ui.pages.external_luminance import show_external_luminance
+from ui.pages.LRGB_luminance import show_lrgb_luminance
 
 # ─────────────────────────────────────
 # CONFIG STREAMLIT
 # ─────────────────────────────────────
+
 st.set_page_config(
     page_title="Astro Studio",
     page_icon="🔭",
@@ -22,18 +26,26 @@ st.set_page_config(
 )
 
 
+
 # ─────────────────────────────────────
 # CSS + BACKGROUND
 # ─────────────────────────────────────
+
 def load_css():
 
     css_path = Path("ui/style.css")
 
     if css_path.exists():
+
         st.markdown(
-            f"<style>{css_path.read_text(encoding='utf-8')}</style>",
+            f"""
+            <style>
+            {css_path.read_text(encoding="utf-8")}
+            </style>
+            """,
             unsafe_allow_html=True
         )
+
 
 
 def set_background():
@@ -41,90 +53,183 @@ def set_background():
     img_path = Path("ui/background.jpg")
 
     if img_path.exists():
+
         with open(img_path, "rb") as f:
-            encoded = base64.b64encode(f.read()).decode()
+
+            encoded = base64.b64encode(
+                f.read()
+            ).decode()
+
 
         st.markdown(
             f"""
             <style>
+
             .stApp {{
-                background-image: url("data:image/png;base64,{encoded}");
-                background-size: cover;
-                background-position: center;
-                background-attachment: fixed;
+
+                background-image:
+
+                linear-gradient(
+                    rgba(0,0,0,0.20),
+                    rgba(0,0,0,0.20)
+                ),
+
+                url(
+                "data:image/png;base64,{encoded}"
+                );
+
+
+                background-size:cover;
+                background-position:center;
+                background-attachment:fixed;
+
             }}
+
             </style>
             """,
+
             unsafe_allow_html=True
         )
 
 
+
 # ─────────────────────────────────────
-# INIT STATE
+# INITIALISATION WORKFLOW
 # ─────────────────────────────────────
+
 def init_state():
+
     defaults = {
-        "page": "Accueil",
+
+
+        # étape workflow
+
+        "workflow_step": 0,
+
+
+        # projet
+
         "workdir": None,
+
         "siril": None,
+
         "config": None,
+
+
+
+        # SHO
+
+        "palette": None,
+
+        "rgb_ready": False,
+
+
+        # luminance
+
+        "luminance_mode": None,
+
+
+        # résultats
+
+        "R_final": None,
+
+        "G_final": None,
+
+        "B_final": None,
+
+
     }
 
-    for k, v in defaults.items():
-        if k not in st.session_state:
-            st.session_state[k] = v
 
+    for key, value in defaults.items():
+
+        if key not in st.session_state:
+
+            st.session_state[key] = value
+
+
+
+
+# ─────────────────────────────────────
+# INIT APPLICATION
+# ─────────────────────────────────────
 
 init_state()
 
-
-# ─────────────────────────────────────
-# STYLE GLOBAL (IMPORTANT)
-# ─────────────────────────────────────
 load_css()
+
 set_background()
+
 
 
 # ─────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────
-page = sidebar()
+
+step = sidebar()
+
 
 
 # ─────────────────────────────────────
-# ROUTING
+# ROUTING WORKFLOW
 # ─────────────────────────────────────
-if page == "Accueil":
-    show_home()
 
-elif page == "Projet":
+
+if step == 0:
+
+    # Projet
+
     show_project()
 
-elif page == "Prétraitement":
+
+
+elif step == 1:
+
+    # Prétraitement Siril
+
     show_preprocessing()
 
-elif page == "Traitement":
+
+
+elif step == 2:
+
+    # Palette SHO
+
     sho_mixer()
 
-elif page == "Résultats":
-    show_results()
+
+
+elif step == 3:
+
+    # Luminance
+
+    show_sho_lab()
+
+
+
+elif step == 4:
+
+    # Branche sans luminance
+
+    show_aucune_luminance()
+
+
+
+elif step == 5:
+
+    # Branche luminance externe
+
+    show_external_luminance()
+
+
+
+elif step == 6:
+    show_lrgb_luminance()
+
+
 
 else:
-    st.error("Page inconnue")
 
-
-# ─────────────────────────────────────
-# FOOTER
-# ─────────────────────────────────────
-st.markdown(
-    """
-    <hr>
-    <div style="text-align:center; font-size:0.85em; color:#888;">
-        © 2026 <b>Sikuath</b> — Astro Studio<br>
-        Logiciel distribué sous licence MIT.<br>
-        Les images, captures d'écran et contenus graphiques sont sous licence
-        <b>CC BY-NC-ND 4.0</b>, sauf mention contraire.
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+    st.error(
+        "Étape workflow inconnue"
+    )

@@ -1,0 +1,5 @@
+requires 1.4.4
+
+rgbcomp R.fit G.fit B.fit -out=RGB_final.fit
+
+close
