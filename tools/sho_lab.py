@@ -13,17 +13,10 @@ def make_luminance(
     coeffs=(0.25, 0.60, 0.15)
 ):
     """
-    Création d'une luminance calculée.
+    Création de la luminance.
 
-    Modes Python :
-    - Ha
-    - SHO synthétique
-
-    Les modes :
-    - Aucune
-    - L externe
-
-    sont gérés par l'interface.
+    Cette luminance sera envoyée directement
+    à Siril pour la vraie recomposition RGB.
     """
 
     if mode == "Ha":
@@ -35,10 +28,9 @@ def make_luminance(
 
         s, h, o = coeffs
 
-
         total = s + h + o
 
-        if total != 0:
+        if total > 0:
 
             s /= total
             h /= total
@@ -46,10 +38,8 @@ def make_luminance(
 
 
         L = (
-            s * S
-            +
-            h * H
-            +
+            s * S +
+            h * H +
             o * O
         )
 
@@ -57,7 +47,7 @@ def make_luminance(
     else:
 
         raise ValueError(
-            f"Mode luminance Python inconnu : {mode}"
+            f"Mode inconnu : {mode}"
         )
 
 
@@ -65,9 +55,8 @@ def make_luminance(
 
 
 
-
 # ─────────────────────────────
-# APPLICATION LUMINANCE
+# PREVIEW LRGB
 # ─────────────────────────────
 
 def apply_luminance(
@@ -78,68 +67,116 @@ def apply_luminance(
     strength=1.0
 ):
     """
-    Injection d'une luminance dans RGB.
+    Aperçu de la fusion LRGB.
+
+    Cette fonction sert uniquement
+    à simuler visuellement le résultat Siril.
+
     """
+
+
 
     if L is None:
 
         return (
-            R,
-            G,
-            B
+            R.copy(),
+            G.copy(),
+            B.copy()
         )
 
 
-    current_L = (
-        R
-        +
-        G
-        +
-        B
-    ) / 3.0
 
+    # -------------------------
+    # LUMINANCE RGB DE REFERENCE
+    # -------------------------
 
-    ratio = L / (
-        current_L
+    current = (
+        0.2126 * R
         +
-        1e-8
+        0.7152 * G
+        +
+        0.0722 * B
     )
+
+
+
+    # -------------------------
+    # RAPPORT L / RGB
+    # -------------------------
+
+    ratio = (
+        L /
+        (
+            current
+            +
+            1e-8
+        )
+    )
+
 
 
     ratio = np.clip(
         ratio,
+        0.25,
+        4.0
+    )
+
+
+
+    # réglage utilisateur
+
+    ratio = (
+        1
+        +
+        (ratio - 1)
+        *
+        strength
+    )
+
+
+
+    # -------------------------
+    # APPLICATION LUMINANCE
+    # -------------------------
+
+    R_preview = R * ratio
+    G_preview = G * ratio
+    B_preview = B * ratio
+
+
+
+    # -------------------------
+    # PAS DE NORMALISATION ICI
+    #
+    # Siril conserve les rapports
+    # entre les couleurs.
+    # -------------------------
+
+    R_preview = np.clip(
+        R_preview,
         0,
-        10
+        None
     )
 
-
-    R2 = R * (
-        1 - strength
-        +
-        strength * ratio
+    G_preview = np.clip(
+        G_preview,
+        0,
+        None
     )
 
-
-    G2 = G * (
-        1 - strength
-        +
-        strength * ratio
+    B_preview = np.clip(
+        B_preview,
+        0,
+        None
     )
 
-
-    B2 = B * (
-        1 - strength
-        +
-        strength * ratio
-    )
 
 
     return (
-        R2,
-        G2,
-        B2
+        R_preview,
+        G_preview,
+        B_preview
     )
-
 
 
 
@@ -159,9 +196,11 @@ def normalize(img):
     maxi = np.nanmax(img)
 
 
+
     if maxi - mini == 0:
 
         return img
+
 
 
     return (

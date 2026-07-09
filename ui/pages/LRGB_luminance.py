@@ -81,13 +81,10 @@ def show_lrgb_luminance():
 
         Astro Studio va préparer :
 
-        ✔ R.fit  
-        ✔ G.fit  
-        ✔ B.fit  
-        ✔ L.fit  
-
-
-        puis lancer la recomposition LRGB dans Siril.
+        ✔ la couche de luminance et l'injecter dans les trois fichiers RGB  
+        ✔ creér le fichier RGB_final.fit  
+        ✔ ouvrir le fichier RGB_final.fit avec Siril  
+       
         """
     )
 
@@ -103,7 +100,7 @@ def show_lrgb_luminance():
         /
         "scripts"
         /
-        "05_LRGB.ssf"
+        "04_RGB.ssf"
     )
 
 
@@ -142,12 +139,7 @@ def show_lrgb_luminance():
                 B
             )
 
-            save_fits(
-                workdir / "L.fit",
-                L
-            )
-
-
+          
         st.success(
             "Couches LRGB créées ✔"
         )
