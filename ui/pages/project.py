@@ -3,6 +3,7 @@ from pathlib import Path
 
 from core.config import load_config, save_config
 from core.siril_detect import detect_siril
+from core.siril_version import get_siril_version
 
 
 
@@ -15,7 +16,12 @@ def show_project():
         r"""
         Configurer l'environnement de travail d'Astro Studio.  
 
-        Le **Dossier de travail** doit contenir les trois fichiers Ha.fit ,SII.fit et OIII.fit.  
+        Le **Dossier de travail** doit contenir les trois fichiers :
+
+        - Ha.fit
+        - SII.fit
+        - OIII.fit
+
 
         Astro Studio détecte automatiquement le logiciel Siril installé sur votre ordinateur.
         
@@ -48,15 +54,26 @@ def show_project():
     detected_siril = detect_siril()
 
 
-
     if detected_siril:
 
+
+        siril_version = get_siril_version(
+            detected_siril
+        )
+
+
         st.success(
-            f"🔭 Siril détecté automatiquement :\n\n{detected_siril}"
+            "🔭 Siril détecté automatiquement ✔"
+        )
+
+
+        st.info(
+            f"Version : {siril_version}"
         )
 
 
     else:
+
 
         st.warning(
             "⚠ Siril n'a pas été détecté automatiquement."
@@ -65,30 +82,46 @@ def show_project():
 
 
     # ─────────────────────────────
+    # INFORMATIONS TECHNIQUES
+    # ─────────────────────────────
+
+    with st.expander(
+        "🔧 Informations techniques"
+    ):
+
+
+        siril = st.text_input(
+
+            "Chemin siril-cli.exe",
+
+            value=config.get(
+                "siril_path",
+                detected_siril or ""
+            )
+
+        )
+
+
+
+        if siril:
+
+            st.caption(
+                "Ce chemin peut être modifié si Siril est installé dans un autre dossier."
+            )
+
+
+
+    # ─────────────────────────────
     # DOSSIER TRAVAIL
     # ─────────────────────────────
 
     workdir = st.text_input(
+
         "📂 Dossier de travail",
+
         value=config.get(
             "workdir",
             ""
-        )
-    )
-
-
-
-    # ─────────────────────────────
-    # SIRIL
-    # ─────────────────────────────
-
-    siril = st.text_input(
-
-        "🔭 Chemin siril-cli.exe",
-
-        value=config.get(
-            "siril_path",
-            detected_siril or ""
         )
 
     )
@@ -114,12 +147,14 @@ def show_project():
 
         if not workdir:
 
+
             errors.append(
                 "Le dossier de travail n'est pas défini."
             )
 
 
         elif not Path(workdir).exists():
+
 
             errors.append(
                 "Le dossier de travail n'existe pas."
@@ -129,12 +164,14 @@ def show_project():
 
         if not siril:
 
+
             errors.append(
                 "Le chemin Siril n'est pas défini."
             )
 
 
         elif not Path(siril).exists():
+
 
             errors.append(
                 "Le programme Siril est introuvable."
@@ -147,6 +184,7 @@ def show_project():
         # -------------------------
 
         if errors:
+
 
             for error in errors:
 
@@ -220,6 +258,7 @@ def show_project():
 
 
     else:
+
 
         st.warning(
             "Aucun dossier validé"
