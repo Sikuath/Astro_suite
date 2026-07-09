@@ -95,7 +95,7 @@ def show_sho_lab():
 
 
         mode = st.radio(
-            "Source",
+            "Choisir le type de Luminance",
             [
                 "Aucune",
                 "Ha",
@@ -128,12 +128,30 @@ def show_sho_lab():
 
             st.info(
                 """
-                Une luminance réalisée dans Siril
-                sera utilisée pour une recomposition LRGB.
+                Une luminance externe est nécessaire pour faire une recomposition classique
+                dans Siril. Les trois couches RVB seront enregistrées dans le dossier de travail.
                 """
             )
 
+        elif mode == "Ha":
 
+            st.info(
+                """
+                Une luminance fabriquée automatiquement à l'aide de la couche H-alpha puis
+                les couches RVB seront envoyées directement vers Siril pour une
+                recomposition couleur.
+                """
+            )
+        
+        elif mode == "SHO synthétique":
+
+            st.info(
+                """
+                Une luminance fabriquée manuellement à l'aide des trois couches SHO, puis
+                les couches RVB seront envoyées directement vers Siril pour une
+                recomposition couleur.
+                """
+            )
 
         # -------------------------
         # Curseurs SHO

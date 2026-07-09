@@ -12,9 +12,9 @@ def show_project():
         r"""
         Configurer l'environnement de travail d'Astro Studio.  
 
-        Le dossier doit contenir les trois fichiers Ha.fit SII.fit et OIII.fit.  
+        Le "Dossier de travail" doit contenir les trois fichiers Ha.fit SII.fit et OIII.fit.  
 
-        Astro_studio a besoin de connaitre l'emplacement du répertoire de travail ainsi que chemin du logiciel siril-cli.exe qui se trouve au même endroit que Siril.  
+        Astro_studio a besoin de connaitre l'emplacement du chemin du logiciel siril-cli.exe qui se trouve au même endroit que le logiciel Siril.  
 
         Chemin par défaut : "C:\Program Files\Siril\bin\siril-cli.exe"  
                 

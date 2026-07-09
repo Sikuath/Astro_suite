@@ -126,7 +126,7 @@ def sho_mixer():
 
         palette = st.selectbox(
 
-            "Palette",
+            "Choisir une palette SHO",
 
             [
                 "Manual",
@@ -143,7 +143,150 @@ def sho_mixer():
             key="sho_palette"
         )
 
+        # -------------------------
+        # DESCRIPTION PALETTE
+        # -------------------------
 
+        if palette == "Manual":
+
+            st.info(
+                """
+                Palette personnalisée.
+
+                Permet de régler manuellement la contribution
+                de chaque couche SHO dans les canaux RVB.
+
+                Idéal pour créer votre propre rendu.
+                """
+            )
+
+
+        elif palette == "Hubble SHO":
+
+            st.info(
+                """
+                Palette Hubble SHO classique.
+
+                SII → Rouge  
+                Ha → Vert  
+                OIII → Bleu  
+
+                C'est la palette utilisée par les images
+                emblématiques du télescope Hubble.
+                Elle met en évidence les différences
+                de composition des nébuleuses.
+                """
+            )
+
+
+        elif palette == "HOO Boost":
+
+            st.info(
+                """
+                Palette HOO renforcée.
+
+                Ha et OIII dominent la composition.
+
+                Donne des images très contrastées avec
+                des zones Ha rouges/orangées et des zones
+                OIII bleues/cyan.
+
+                Très adaptée aux nébuleuses en émission.
+                """
+            )
+
+
+        elif palette == "HOO Natural":
+
+            st.info(
+                """
+                Palette HOO naturelle.
+
+                Utilise principalement :
+                
+                Ha → Rouge
+                OIII → Vert et Bleu
+
+                Elle produit un rendu proche des couleurs
+                naturelles tout en conservant le contraste
+                des images SHO.
+                """
+            )
+
+
+        elif palette == "Hα Rich":
+
+            st.info(
+                """
+                Palette dominée par le H-alpha.
+
+                Renforce les structures d'hydrogène ionisé.
+
+                Idéal pour les nébuleuses riches en Ha
+                comme les régions d'émission.
+                """
+            )
+
+
+        elif palette == "OIII Rich":
+
+            st.info(
+                """
+                Palette mettant en avant l'OIII.
+
+                Accentue les zones riches en oxygène ionisé.
+
+                Permet de faire ressortir les structures
+                bleues/cyan des nébuleuses.
+                """
+            )
+
+
+        elif palette == "Foraxx Pro":
+
+            st.info(
+                """
+                Palette inspirée de la méthode Foraxx.
+
+                Cherche à préserver les couleurs naturelles
+                des différentes couches tout en améliorant
+                la séparation des structures.
+
+                Très utilisée en traitement SHO avancé.
+                """
+            )
+
+
+        elif palette == "Gold & Blue":
+
+            st.info(
+                """
+                Palette artistique Gold & Blue.
+
+                Produit un contraste chaud/froid :
+
+                - tons dorés pour les régions Ha/SII
+                - tons bleus pour l'OIII
+
+                Très esthétique pour les présentations.
+                """
+            )
+
+
+        elif palette == "Teal & Orange":
+
+            st.info(
+                """
+                Palette artistique Teal & Orange.
+
+                Accentue le contraste entre :
+
+                - cyan/bleu pour l'OIII
+                - orange pour l'hydrogène
+
+                Donne un rendu moderne et très lisible.
+                """
+            )
 
         if palette == "Manual":
 
