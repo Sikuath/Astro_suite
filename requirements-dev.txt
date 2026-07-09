@@ -1,2 +1,5 @@
-pytest
-black
+astropy
+numpy
+scipy
+streamlit
+pipreqs
