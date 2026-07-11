@@ -1,101 +1,290 @@
-# 🔭 Astro Studio
+# 🌌 Astro_suite
 
-Astro Studio est une application de traitement d’images astrophotographiques centrée sur le mix SHO (SII / Hα / OIII).  
-Elle permet de charger un projet, manipuler des palettes, ajuster le stretch et le zoom, et exporter des images RGB.
+![Astro_suite](https://img.shields.io/badge/Astro_suite-Astrophotographie-blue)
+![Python](https://img.shields.io/badge/Python-3.x-yellow)
+![Streamlit](https://img.shields.io/badge/Interface-Streamlit-red)
+![Siril](https://img.shields.io/badge/Traitement-Siril-purple)
 
----
+## 🚀 Présentation
 
-## ✨ Fonctionnalités actuelles
+**Astro_suite** est une suite logicielle dédiée à l'astrophotographie.
 
-- 📂 Gestion de projets astrophotographiques
-- 🌈 Mixage SHO (SII / Hα / OIII)
-- 🎨 Palettes prédéfinies + mode manuel
-- 🔍 Preview interactive en temps réel
-- 📈 Ajustement du stretch
-- 🔎 Zoom d’inspection
-- 💾 Export des canaux RGB en FITS
+Son objectif est de proposer un environnement complet permettant d'accompagner l'astrophotographe depuis la gestion des acquisitions jusqu'au traitement final des images.
 
----
+La suite automatise les tâches répétitives tout en s'appuyant sur des logiciels spécialisés reconnus comme **Siril**.
 
-## 🧪 Workflow utilisateur
+Workflow général :
 
-1. Créer ou sélectionner un dossier projet
-2. Ajouter les fichiers :
-   - `SII.fit`
-   - `HA.fit`
-   - `OIII.fit`
-3. Aller dans l’onglet **Traitement**
-4. Choisir une palette ou régler manuellement les coefficients
-5. Ajuster stretch et zoom
-6. Exporter les images RGB
+```
+📁 Gestion du projet
+        ↓
+🔭 Sélection des acquisitions
+        ↓
+🗑️ Vérification des rejets
+        ↓
+⚙️ Prétraitement automatique Siril
+        ↓
+✨ Traitement final LRGB / SHO
+```
 
 ---
 
-## 📁 Structure d’un projet
-mon_projet/
-├── SII.fit
-├── HA.fit
-├── OIII.fit
+# ✨ Fonctionnalités
 
+## 📁 Gestion de projet
+
+Astro_suite permet de centraliser une session astrophotographique :
+
+- configuration du dossier Lights
+- configuration du chemin Siril
+- organisation automatique des fichiers
+- sauvegarde des paramètres du projet
 
 ---
 
-## 🚀 Installation (mode développement)
+# 🔭 Analyse automatique des acquisitions
 
-1. Cloner le projet
-```bash
-git clone https://github.com/Sikuath/Astro_studio.git
-cd Astro_studio
+La suite analyse les fichiers FITS afin d'identifier automatiquement :
 
-2. Créer un environnement virtuel
-```bash
-python -m venv venv
-source venv/bin/activate   # Linux / Mac
-venv\Scripts\activate      # Windows
+- 🎯 l'objet photographié
+- 📷 la caméra utilisée
+- 🎨 les filtres disponibles
+- 📊 le nombre d'images
 
-3. Installer les dépendances
-```bash
-pip install -r requirements.txt
+Les informations sont récupérées directement depuis les entêtes FITS lorsque celles-ci sont disponibles.
 
+Exemple :
 
-4. Utiliser l'application
-▶️lancer Astro_studio.bat
+```json
+{
+  "target": "IC 1805",
+  "camera": "ZWO ASI2600MM Pro",
+  "filters": {
+    "H": 31,
+    "O": 31,
+    "S": 31
+  },
+  "type": "SHO",
+  "files": 93
+}
+```
 
-5. Dépendances principales
-streamlit
-numpy
-scipy
-astropy (lecture FITS si utilisé)
-pillow (preview image)
+---
 
-6. Palettes disponibles
-Manual
-Hubble SHO
-HOO Boost
-HOO Natural
-Hα Rich
-OIII Rich
-Foraxx Pro
-Gold & Blue
-Teal & Orange
+# 🗑️ Sélection et contrôle des Lights
 
-7. 💾 Export
-L’application génère :
+Avant le prétraitement, Astro_suite permet :
 
-R.fit
-G.fit
-B.fit
+- visualisation rapide des images FITS
+- navigation dans les acquisitions
+- rejet manuel des images indésirables
 
-8. Divers
-aucune installation Python requise pour les utilisateurs
-🔭 Vision à long terme
+Les images rejetées sont déplacées automatiquement dans un dossier dédié.
 
-Astro Studio est conçu pour évoluer vers un outil pédagogique pour club astro :
+Une étape de contrôle permet ensuite :
 
-simplification de l’interface pour les élèves
-presets de traitement automatiques
-mode guidé (workflow pas à pas)
-distribution facile sous Windows
+- d'afficher les images rejetées
+- de restaurer une image supprimée par erreur
+- de valider la sélection finale
+
+---
+
+# ⚙️ Prétraitement Siril automatisé
+
+Astro_suite détecte automatiquement le type de session.
+
+## 🌈 SHO
+
+Détection :
+
+- Hα
+- OIII
+- SII
+
+Pipeline :
+
+```
+Alignement_lights.ssf
+          ↓
+Traitement_SHO.ssf
+```
+
+---
+
+## 🌈 LSHO
+
+Détection :
+
+- Luminance
+- Hα
+- OIII
+- SII
+
+Pipeline :
+
+```
+Alignement_lights.ssf
+          ↓
+Traitement_LSHO.ssf
+```
+
+---
+
+## 🎨 LRGB
+
+Détection :
+
+- Luminance
+- Rouge
+- Vert
+- Bleu
+
+Pipeline :
+
+```
+Alignement_lights.ssf
+          ↓
+Traitement_LRGB.ssf
+```
+
+---
+
+# 🖥️ Console de traitement intégrée
+
+Le traitement Siril est directement piloté depuis l'interface.
+
+La console affiche :
+
+- lancement des scripts
+- messages Siril
+- erreurs éventuelles
+- état d'avancement du pipeline
+
+L'utilisateur n'a pas besoin de lancer manuellement les scripts.
+
+---
+
+# 🗂️ Organisation automatique des fichiers
+
+Après traitement, Astro_suite organise les couches :
+
+```
+Projet
+│
+├── L
+├── R
+├── G
+├── B
+├── H
+├── O
+├── S
+│
+├── x_temp
+│
+└── scripts
+```
+
+Cette organisation facilite les étapes suivantes du traitement.
+
+---
+
+# 🧩 Architecture du projet
+
+```
+Astro_suite
+│
+├── Astro_pretraitement
+│
+│   ├── app.py
+│   │
+│   ├── pages
+│   │   ├── 01_Project.py
+│   │   ├── 02_Preview.py
+│   │   ├── 03_Check.py
+│   │   ├── 04_Pretraitement.py
+│   │   └── 05_Traitement.py
+│   │
+│   ├── core
+│   │   ├── config.py
+│   │   ├── fits_loader.py
+│   │   ├── fits_metadata.py
+│   │   ├── preview.py
+│   │   ├── reject.py
+│   │   └── session_analyzer.py
+│   │
+│   ├── scripts
+│   │   ├── Alignement_lights.ssf
+│   │   ├── Traitement_LRGB.ssf
+│   │   ├── Traitement_SHO.ssf
+│   │   └── Traitement_LSHO.ssf
+│   │
+│   └── ui
+│       ├── sidebar.py
+│       └── theme.py
+│
+└── README.md
+```
+
+---
+
+# 🛠️ Technologies utilisées
+
+## Interface
+
+- Python
+- Streamlit
+
+## Astronomie
+
+- Siril
+- FITS
+- Astropy
+
+## Gestion des fichiers
+
+- pathlib
+- shutil
+- subprocess
+
+---
+
+# 🎯 Objectifs
+
+Astro_suite a été développé pour :
+
+- simplifier les traitements astrophotographiques répétitifs
+- réduire les erreurs de manipulation
+- automatiser les étapes longues
+- proposer un workflow clair et reproductible
+- rendre les traitements avancés plus accessibles
+
+---
+
+# 🔮 Évolutions possibles
+
+Les futures évolutions pourront inclure :
+
+- analyse automatique de la qualité des images
+- mesure FWHM des étoiles
+- détection automatique des mauvaises acquisitions
+- gestion des darks, flats et offsets
+- automatisation complète acquisition → image finale
+- historique des sessions traitées
+
+---
+
+# 🌌 Philosophie du projet
+
+Astro_suite ne cherche pas à remplacer les logiciels astronomiques existants.
+
+Son objectif est de créer une couche d'automatisation intelligente permettant de connecter les différents outils astrophotographiques dans un workflow simple, fiable et efficace.
+
+---
+
+# 👨‍🚀 Astro_suite
+
+**Observer • Capturer • Trier • Prétraiter • Créer**
+
 📄 Licence
 
 MIT License © 2026
