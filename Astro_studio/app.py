@@ -2,23 +2,32 @@ import streamlit as st
 from pathlib import Path
 import base64
 
+
 from ui.sidebar import sidebar
+
 
 from ui.pages.project import show_project
 from ui.pages.preprocessing import show_preprocessing
+from ui.pages.lrgb_preprocessing import show_lrgb_preprocessing
+
 
 from tools.sho_mixer import sho_mixer
+from tools.lrgb_mixer import lrgb_mixer
+
 
 from ui.pages.sho_lab import show_sho_lab
-from pathlib import Path
+
 
 
 # ─────────────────────────────────────
 # CONFIG STREAMLIT
 # ─────────────────────────────────────
+
 BASE_DIR = Path(__file__).parent
 
 ICON = BASE_DIR / "assets" / "Astro_suite.ico"
+
+
 st.set_page_config(
     page_title="Astro Studio",
     page_icon=str(ICON),
@@ -106,13 +115,16 @@ def init_state():
     defaults = {
 
 
-        # workflow
+        # =====================
+        # WORKFLOW
+        # =====================
 
         "workflow_step": 0,
 
 
-
-        # projet
+        # =====================
+        # PROJET
+        # =====================
 
         "workdir": None,
 
@@ -120,11 +132,40 @@ def init_state():
 
         "siril_gui": None,
 
+        "siril": None,
+
         "config": None,
 
 
+        "project_type": None,
 
-        # SHO source
+        "project_detection": None,
+
+
+
+        # =====================
+        # PRETRAITEMENT SHO
+        # =====================
+
+        "preprocess_done": False,
+
+        "preprocess_running": False,
+
+
+
+        # =====================
+        # PRETRAITEMENT LRGB
+        # =====================
+
+        "lrgb_preprocess_done": False,
+
+        "lrgb_preprocess_running": False,
+
+
+
+        # =====================
+        # SHO SOURCES
+        # =====================
 
         "S": None,
 
@@ -134,7 +175,23 @@ def init_state():
 
 
 
-        # RGB généré
+        # =====================
+        # LRGB SOURCES
+        # =====================
+
+        "L": None,
+
+        "R_lrgb": None,
+
+        "G_lrgb": None,
+
+        "B_lrgb": None,
+
+
+
+        # =====================
+        # RGB RESULTAT
+        # =====================
 
         "R": None,
 
@@ -150,15 +207,17 @@ def init_state():
 
 
 
-        # luminance SHO Lab
+        # =====================
+        # SHO LAB
+        # =====================
 
         "luminance_mode": None,
 
-        "L": None,
 
 
-
-        # résultats finaux
+        # =====================
+        # RESULTATS FINAUX
+        # =====================
 
         "R_final": None,
 
@@ -169,9 +228,19 @@ def init_state():
         "RGB_final": None,
 
 
-        # sécurité
+
+        # =====================
+        # SECURITE
+        # =====================
 
         "siril_opened": False,
+
+
+        # =====================
+        # TERMINAL
+        # =====================
+
+        "pipeline_logs": [],
 
     }
 
@@ -210,31 +279,134 @@ step = sidebar()
 # WORKFLOW
 # ─────────────────────────────────────
 
+
+# =====================================
+# ETAPE 0
+# PROJET
+# =====================================
+
 if step == 0:
 
     show_project()
 
 
 
+# =====================================
+# ETAPE 1
+# PRETRAITEMENT
+# =====================================
+
 elif step == 1:
 
-    show_preprocessing()
+
+    project_type = st.session_state.get(
+        "project_type"
+    )
 
 
+    if project_type == "SHO":
+
+
+        show_preprocessing()
+
+
+
+    elif project_type == "LRGB":
+
+
+        show_lrgb_preprocessing()
+
+
+
+    else:
+
+
+        st.warning(
+            "Type de projet non détecté."
+        )
+
+
+
+# =====================================
+# ETAPE 2
+# RECOMPOSITION
+# =====================================
 
 elif step == 2:
 
-    sho_mixer()
+
+    project_type = st.session_state.get(
+        "project_type"
+    )
 
 
+    if project_type == "SHO":
+
+
+        sho_mixer()
+
+
+
+    elif project_type == "LRGB":
+
+
+        lrgb_mixer()
+
+
+
+    else:
+
+
+        st.warning(
+            "Aucun type de projet confirmé."
+        )
+
+
+
+# =====================================
+# ETAPE 3
+# LAB
+# =====================================
 
 elif step == 3:
 
-    show_sho_lab()
+
+    project_type = st.session_state.get(
+        "project_type"
+    )
 
 
+    if project_type == "SHO":
+
+
+        show_sho_lab()
+
+
+
+    elif project_type == "LRGB":
+
+
+        st.info(
+            "Module LRGB Lab en préparation."
+        )
+
+
+
+    else:
+
+
+        st.warning(
+            "Projet non défini."
+        )
+
+
+
+# =====================================
+# ERREUR
+# =====================================
 
 else:
+
 
     st.error(
         "Étape workflow inconnue"

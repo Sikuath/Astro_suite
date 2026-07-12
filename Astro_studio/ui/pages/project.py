@@ -4,6 +4,7 @@ from pathlib import Path
 from core.config import load_config, save_config
 from core.siril_detect import detect_siril
 from core.siril_version import get_siril_version
+from core.project_detector import detect_project
 
 
 
@@ -13,30 +14,78 @@ from core.siril_version import get_siril_version
 
 def show_project():
 
-    st.title("📁 Projet")
 
-
+    # =============================
+    # CSS LOCAL
+    # =============================
 
     st.markdown(
-        r"""
-Configurer l'environnement de travail d'Astro Studio.
+        """
+        <style>
 
-Le dossier de travail doit contenir les fichiers Ha.fit - SII.fit - OIII.fit
+        .astro-text {
+
+            color:#eeeeee;
+            font-size:1rem;
+
+        }
 
 
-Astro Studio utilise deux programmes livrés avec Siril :
+        .detect-title {
 
-- **siril-cli.exe** → scripts automatiques et prétraitement
-- **siril.exe** → ouverture graphique des images finales
+            color:white;
+            font-size:1.3rem;
+            font-weight:600;
+
+        }
+
+
+        </style>
         """,
         unsafe_allow_html=True
     )
 
 
 
-    # ─────────────────────────────
+    # =============================
+    # TITRE
+    # =============================
+
+    st.title("📁 Projet")
+
+
+    st.markdown(
+        """
+        <div class="astro-text">
+
+        Configurez le dossier de travail et l'environnement Siril.
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        """
+        <div class="astro-text">
+
+        <b>siril-cli.exe</b> → scripts automatiques et prétraitement
+
+        <br>
+
+        <b>siril.exe</b> → ouverture graphique des images finales
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+
+    # =============================
     # CHARGEMENT CONFIG
-    # ─────────────────────────────
+    # =============================
 
     if (
         "config" not in st.session_state
@@ -46,18 +95,19 @@ Astro Studio utilise deux programmes livrés avec Siril :
         st.session_state.config = load_config()
 
 
+
     config = st.session_state.config
 
 
 
-    # ─────────────────────────────
+    # =============================
     # DETECTION SIRIL
-    # ─────────────────────────────
+    # =============================
 
     detected_siril = detect_siril()
 
-
     detected_dir = None
+
 
 
     if detected_siril:
@@ -68,7 +118,8 @@ Astro Studio utilise deux programmes livrés avec Siril :
         ).parent
 
 
-        siril_version = get_siril_version(
+
+        version = get_siril_version(
             detected_siril
         )
 
@@ -79,7 +130,7 @@ Astro Studio utilise deux programmes livrés avec Siril :
 
 
         st.info(
-            f"Version : {siril_version}"
+            f"Version : {version}"
         )
 
 
@@ -92,27 +143,21 @@ Astro Studio utilise deux programmes livrés avec Siril :
 
 
 
-    # ─────────────────────────────
-    # CHEMINS SIRIL
-    # ─────────────────────────────
+    # =============================
+    # CONFIGURATION SIRIL
+    # =============================
 
     default_cli = config.get(
         "siril_cli",
-        str(
-            detected_dir / "siril-cli.exe"
-        )
-        if detected_dir
-        else ""
+        str(detected_dir / "siril-cli.exe")
+        if detected_dir else ""
     )
 
 
     default_gui = config.get(
         "siril_gui",
-        str(
-            detected_dir / "siril.exe"
-        )
-        if detected_dir
-        else ""
+        str(detected_dir / "siril.exe")
+        if detected_dir else ""
     )
 
 
@@ -123,66 +168,148 @@ Astro Studio utilise deux programmes livrés avec Siril :
 
 
         siril_cli = st.text_input(
-            "Chemin siril-cli.exe (scripts)",
+            "Chemin siril-cli.exe",
             value=default_cli
         )
 
 
         siril_gui = st.text_input(
-            "Chemin siril.exe (interface graphique)",
+            "Chemin siril.exe",
             value=default_gui
         )
 
 
-        st.caption(
-            """
-siril-cli.exe :
-→ prétraitement automatique
-→ scripts Siril (.ssf)
 
-siril.exe :
-→ ouverture des images finales
-→ visualisation utilisateur
-            """
-        )
-
-
-
-    # ─────────────────────────────
+    # =============================
     # DOSSIER TRAVAIL
-    # ─────────────────────────────
+    # =============================
 
     workdir = st.text_input(
-
         "📂 Dossier de travail",
-
         value=config.get(
             "workdir",
             ""
         )
-
     )
 
 
 
+    # =============================
+    # DETECTION + VALIDATION
+    # =============================
+
     st.divider()
 
 
+    col_title, col_analyse, col_valide = st.columns(
+        [4,1,1],
+        vertical_alignment="center"
+    )
 
-    # ─────────────────────────────
-    # VALIDATION
-    # ─────────────────────────────
 
-    if st.button(
-        "🚀 Valider le projet"
-    ):
+    with col_title:
+
+        st.markdown(
+            '<div class="detect-title">🔍 Détection du projet</div>',
+            unsafe_allow_html=True
+        )
+
+
+    with col_analyse:
+
+        analyse_clicked = st.button(
+            "🔍 Analyser"
+        )
+
+
+    with col_valide:
+
+        validate_clicked = st.button(
+            "🚀 Valider"
+        )
+
+
+
+    # =============================
+    # ANALYSE PROJET
+    # =============================
+
+    if analyse_clicked:
+
+
+        if not workdir:
+
+
+            st.error(
+                "Choisissez d'abord un dossier."
+            )
+
+
+        else:
+
+
+            detection = detect_project(
+                workdir
+            )
+
+
+            st.session_state.project_detection = detection
+
+
+
+            if detection["valid"]:
+
+
+                st.success(
+                    f"Projet détecté : {detection['type']} ✔"
+                )
+
+
+                for file in detection["detected"]:
+
+                    st.write(
+                        f"✅ {file}"
+                    )
+
+
+
+            elif detection["type"]:
+
+
+                st.warning(
+                    f"Projet {detection['type']} incomplet"
+                )
+
+
+                for file in detection["missing"]:
+
+                    st.write(
+                        f"❌ {file}"
+                    )
+
+
+
+            else:
+
+
+                st.error(
+                    "Aucun projet SHO ou LRGB reconnu."
+                )
+    # =============================
+    # VALIDATION PROJET
+    # =============================
+
+    if validate_clicked:
 
 
         errors = []
 
 
+        detection = st.session_state.get(
+            "project_detection"
+        )
 
-        # dossier
+
 
         if not workdir:
 
@@ -201,17 +328,7 @@ siril.exe :
 
 
 
-        # CLI
-
-        if not siril_cli:
-
-
-            errors.append(
-                "Chemin siril-cli.exe absent."
-            )
-
-
-        elif not Path(siril_cli).exists():
+        if not siril_cli or not Path(siril_cli).exists():
 
 
             errors.append(
@@ -220,17 +337,7 @@ siril.exe :
 
 
 
-        # GUI
-
-        if not siril_gui:
-
-
-            errors.append(
-                "Chemin siril.exe absent."
-            )
-
-
-        elif not Path(siril_gui).exists():
+        if not siril_gui or not Path(siril_gui).exists():
 
 
             errors.append(
@@ -239,9 +346,14 @@ siril.exe :
 
 
 
-        # -------------------------
-        # ERREURS
-        # -------------------------
+        if not detection or not detection["valid"]:
+
+
+            errors.append(
+                "Projet SHO/LRGB non détecté."
+            )
+
+
 
         if errors:
 
@@ -254,21 +366,23 @@ siril.exe :
 
 
 
-        # -------------------------
-        # VALIDATION OK
-        # -------------------------
-
         else:
 
 
+            # =============================
+            # ENREGISTREMENT PROJET
+            # =============================
 
-            # sauvegarde config
+            project_type = detection["type"]
+
 
             config["workdir"] = workdir
 
             config["siril_cli"] = siril_cli
 
             config["siril_gui"] = siril_gui
+
+            config["project_type"] = project_type
 
 
 
@@ -281,44 +395,44 @@ siril.exe :
             st.session_state.config = config
 
 
-
-            # =====================
-            # PROJET
-            # =====================
-
             st.session_state.workdir = workdir
-
-
-
-            # =====================
-            # SIRIL CLI
-            # =====================
 
             st.session_state.siril_cli = siril_cli
 
-
-
-            # Compatibilité anciens modules
-            # preprocessing utilise encore "siril"
-
             st.session_state.siril = siril_cli
-
-
-
-            # =====================
-            # SIRIL GUI
-            # =====================
 
             st.session_state.siril_gui = siril_gui
 
+            st.session_state.project_type = project_type
 
+
+
+            # =============================
+            # RESET PIPELINE
+            # =============================
+
+            st.session_state.preprocess_done = False
+
+            st.session_state.preprocess_running = False
+
+
+            st.session_state.lrgb_preprocess_done = False
+
+            st.session_state.lrgb_preprocess_running = False
+
+
+            st.session_state.pipeline_logs = []
+
+
+
+            # Passage étape suivante
 
             st.session_state.workflow_step = 1
 
 
 
             st.success(
-                "Projet validé ✔️ Passage au prétraitement..."
+                f"Projet {project_type} validé ✔️ Passage au prétraitement..."
             )
 
 
@@ -330,13 +444,32 @@ siril.exe :
 
 
 
-    # ─────────────────────────────
+    # =============================
     # ETAT PROJET
-    # ─────────────────────────────
+    # =============================
 
     st.subheader(
         "📊 État du projet"
     )
+
+
+
+    if st.session_state.get(
+        "project_type"
+    ):
+
+
+        st.success(
+            f"🛰 Type : {st.session_state.project_type}"
+        )
+
+
+    else:
+
+
+        st.warning(
+            "Type de projet non défini"
+        )
 
 
 

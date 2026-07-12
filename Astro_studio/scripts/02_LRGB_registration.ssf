@@ -1,0 +1,31 @@
+requires 1.4.0
+
+# ==================================================
+# ASTRO STUDIO - STEP 02
+# ALIGNEMENT DES MASTERS LRGB
+# ==================================================
+
+# IMPORTANT :
+# On suppose que Python a créé une séquence "colors"
+# à partir des 4 images dans le dossier de travail.
+cd "process/registration"
+# --------------------------------------------------
+# 1) Création de la séquence
+# --------------------------------------------------
+convert colors -out=process
+
+# --------------------------------------------------
+# 2) Alignement global (méthode Siril officielle)
+# --------------------------------------------------
+cd "process"
+register colors -2pass
+
+# --------------------------------------------------
+# 3) Application de l'alignement
+# --------------------------------------------------
+seqapplyreg colors -framing=min
+
+# --------------------------------------------------
+# REGISTRATION OK
+# --------------------------------------------------
+close

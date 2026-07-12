@@ -1,15 +1,12 @@
 from pathlib import Path
 import re
 
-
 from core.fits_metadata import get_fits_metadata
-
 
 
 # =====================================================
 # Analyse automatique d'une session astro
 # =====================================================
-
 
 FILTER_PATTERNS = {
 
@@ -55,7 +52,6 @@ FILTER_PATTERNS = {
 }
 
 
-
 # =====================================================
 # Détection filtre
 # =====================================================
@@ -63,7 +59,6 @@ FILTER_PATTERNS = {
 def detect_filter(filename):
 
     name = filename.upper()
-
 
     for filt, patterns in FILTER_PATTERNS.items():
 
@@ -76,9 +71,7 @@ def detect_filter(filename):
 
                 return filt
 
-
     return None
-
 
 
 # =====================================================
@@ -97,12 +90,9 @@ def extract_target(filename):
     NGC7000
     """
 
-
     name = Path(
         filename
     ).stem
-
-
 
     match = re.search(
         r"Light[_-](.*?)[_-](?:\d+s)",
@@ -110,15 +100,11 @@ def extract_target(filename):
         re.IGNORECASE
     )
 
-
     if match:
 
         return match.group(1)
 
-
-
     return "Objet inconnu"
-
 
 
 # =====================================================
@@ -126,7 +112,6 @@ def extract_target(filename):
 # =====================================================
 
 def extract_camera(filename):
-
 
     cameras = [
 
@@ -140,7 +125,6 @@ def extract_camera(filename):
 
     ]
 
-
     for pattern in cameras:
 
         match = re.search(
@@ -148,15 +132,11 @@ def extract_camera(filename):
             filename.upper()
         )
 
-
         if match:
 
             return match.group(0)
 
-
-
     return "Caméra inconnue"
-
 
 
 # =====================================================
@@ -165,11 +145,9 @@ def extract_camera(filename):
 
 def analyze_session(folder):
 
-
     folder = Path(
         folder
     )
-
 
     result = {
 
@@ -185,27 +163,19 @@ def analyze_session(folder):
 
     }
 
-
-
     fits_files = list(
         folder.glob(
             "*.fit"
         )
     )
 
-
-
     if not fits_files:
 
         return result
 
-
-
     result["files"] = len(
         fits_files
     )
-
-
 
     # =================================================
     # Lecture FITS du premier fichier
@@ -213,31 +183,23 @@ def analyze_session(folder):
 
     first_file = fits_files[0]
 
-
     try:
 
         metadata = get_fits_metadata(
             first_file
         )
 
-
         if metadata.get("Objet"):
 
             result["target"] = metadata["Objet"]
-
-
 
         if metadata.get("Caméra"):
 
             result["camera"] = metadata["Caméra"]
 
-
-
     except Exception:
 
         pass
-
-
 
     # =================================================
     # Analyse des noms fichiers
@@ -245,20 +207,15 @@ def analyze_session(folder):
 
     for file in fits_files:
 
-
-
         # -----------------------------
         # Fallback objet
         # -----------------------------
 
         if result["target"] == "Objet inconnu":
 
-
             result["target"] = extract_target(
                 file.name
             )
-
-
 
         # -----------------------------
         # Fallback caméra
@@ -266,12 +223,9 @@ def analyze_session(folder):
 
         if result["camera"] == "Caméra inconnue":
 
-
             result["camera"] = extract_camera(
                 file.name
             )
-
-
 
         # -----------------------------
         # Filtre
@@ -281,9 +235,7 @@ def analyze_session(folder):
             file.name
         )
 
-
         if filt:
-
 
             result["filters"][filt] = (
 
@@ -298,8 +250,6 @@ def analyze_session(folder):
 
             )
 
-
-
     # =================================================
     # Détection traitement
     # =================================================
@@ -308,9 +258,7 @@ def analyze_session(folder):
         result["filters"]
     )
 
-
     return result
-
 
 
 # =====================================================
@@ -319,55 +267,46 @@ def analyze_session(folder):
 
 def detect_session_type(filters):
 
-
     keys = set(
         filters.keys()
     )
 
-
-
-    # SHO complet
-
-    if {
-
-        "S",
-        "H",
-        "O"
-
-    }.issubset(keys):
-
-        return "SHO"
-
-
-
-    # LSHO
+    # =================================================
+    # LSHO (à tester AVANT SHO)
+    # =================================================
 
     if {
-
         "L",
         "S",
         "H",
         "O"
-
     }.issubset(keys):
 
         return "LSHO"
 
-
-
-    # LRGB
+    # =================================================
+    # SHO
+    # =================================================
 
     if {
+        "S",
+        "H",
+        "O"
+    }.issubset(keys):
 
+        return "SHO"
+
+    # =================================================
+    # LRGB
+    # =================================================
+
+    if {
         "L",
         "R",
         "G",
         "B"
-
     }.issubset(keys):
 
         return "LRGB"
-
-
 
     return "Inconnu"

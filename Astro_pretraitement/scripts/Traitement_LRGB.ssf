@@ -78,7 +78,7 @@ setfindstar -sigma=1.0 -roundness=0.50 -radius=5.0 -convergence=1.00 -gaussian -
 seqsubsky pp_lights_R 1 -samples=20 -tolerance=2.00
 register bkg_pp_lights_R -2pass -transf=homography -interp=la -noclamp -minpairs=10 -maxstars=2000
 seqapplyreg bkg_pp_lights_R -framing=cog -interp=la
-stack r_bkg_pp_lights_R mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../couche_R
+stack r_bkg_pp_lights_R mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../R
 cd ".."
 
 # === VERT (G)
@@ -90,7 +90,7 @@ setfindstar -sigma=1.0 -roundness=0.50 -radius=5.0 -convergence=1.00 -gaussian -
 seqsubsky pp_lights_G 1 -samples=20 -tolerance=2.00
 register bkg_pp_lights_G -2pass -transf=homography -interp=la -noclamp -minpairs=10 -maxstars=2000
 seqapplyreg bkg_pp_lights_G -framing=cog -interp=la
-stack r_bkg_pp_lights_G mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../couche_G
+stack r_bkg_pp_lights_G mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../G
 cd ".."
 
 # === BLEU (B)
@@ -102,7 +102,7 @@ setfindstar -sigma=1.0 -roundness=0.50 -radius=5.0 -convergence=1.00 -gaussian -
 seqsubsky pp_lights_B 1 -samples=20 -tolerance=2.00
 register bkg_pp_lights_B -2pass -transf=homography -interp=la -noclamp -minpairs=10 -maxstars=2000
 seqapplyreg bkg_pp_lights_B -framing=cog -interp=la
-stack r_bkg_pp_lights_B mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../couche_B
+stack r_bkg_pp_lights_B mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../B
 cd ".."
 
 # === LUMINANCE (L)
@@ -114,7 +114,7 @@ setfindstar -sigma=1.0 -roundness=0.50 -radius=5.0 -convergence=1.00 -gaussian -
 seqsubsky pp_lights_L 1 -samples=20 -tolerance=2.00
 register bkg_pp_lights_L -2pass -transf=homography -interp=la -noclamp -minpairs=10 -maxstars=2000
 seqapplyreg bkg_pp_lights_L -framing=cog -interp=la
-stack r_bkg_pp_lights_L mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../couche_L
+stack r_bkg_pp_lights_L mean w 3.00 3.000 -norm=addscale -filter-fwhm=5 -out=../L
 
 ################################################################################
 close

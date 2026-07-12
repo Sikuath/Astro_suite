@@ -225,12 +225,6 @@ def write_log(text):
     st.session_state.siril_logs.append(text)
 
 
-    # garde uniquement les 40 dernières lignes
-    st.session_state.siril_logs = (
-        st.session_state.siril_logs[-40:]
-    )
-
-
     html = f"""
     <div style="
         height:400px;
