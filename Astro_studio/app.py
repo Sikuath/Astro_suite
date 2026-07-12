@@ -3,13 +3,18 @@ from pathlib import Path
 import base64
 
 from ui.sidebar import sidebar
+
 from ui.pages.project import show_project
 from ui.pages.preprocessing import show_preprocessing
 from ui.pages.lrgb_preprocessing import show_lrgb_preprocessing
+
 from tools.sho_mixer import sho_mixer
 from tools.lrgb_mixer import lrgb_mixer
+
 from ui.pages.sho_lab import show_sho_lab
 from ui.pages.rgb_lab import show_rgb_lab
+
+from ui.pages.palette_manager import show_palette_manager
 
 
 
@@ -109,27 +114,27 @@ def init_state():
     defaults = {
 
 
-        # =====================
-        # WORKFLOW
-        # =====================
+        # Navigation
+
+        "page": "workflow",
+
+
+        # Workflow
 
         "workflow_step": 0,
 
 
-        # =====================
-        # PROJET
-        # =====================
+        # Projet
 
         "workdir": None,
+
+        "siril": None,
 
         "siril_cli": None,
 
         "siril_gui": None,
 
-        "siril": None,
-
         "config": None,
-
 
         "project_type": None,
 
@@ -137,19 +142,12 @@ def init_state():
 
 
 
-        # =====================
-        # PRETRAITEMENT SHO
-        # =====================
+        # Prétraitement
 
         "preprocess_done": False,
 
         "preprocess_running": False,
 
-
-
-        # =====================
-        # PRETRAITEMENT LRGB
-        # =====================
 
         "lrgb_preprocess_done": False,
 
@@ -157,9 +155,7 @@ def init_state():
 
 
 
-        # =====================
-        # SHO SOURCES
-        # =====================
+        # SHO
 
         "S": None,
 
@@ -169,9 +165,7 @@ def init_state():
 
 
 
-        # =====================
-        # LRGB SOURCES
-        # =====================
+        # LRGB
 
         "L": None,
 
@@ -183,9 +177,7 @@ def init_state():
 
 
 
-        # =====================
-        # RGB RESULTAT
-        # =====================
+        # RGB
 
         "R": None,
 
@@ -193,25 +185,23 @@ def init_state():
 
         "B": None,
 
-
         "rgb_ready": False,
 
+
+
+        # Palette
 
         "palette": None,
 
 
 
-        # =====================
-        # SHO LAB
-        # =====================
+        # LAB
 
         "luminance_mode": None,
 
 
 
-        # =====================
-        # RESULTATS FINAUX
-        # =====================
+        # Résultats
 
         "R_final": None,
 
@@ -223,16 +213,7 @@ def init_state():
 
 
 
-        # =====================
-        # SECURITE
-        # =====================
-
-        "siril_opened": False,
-
-
-        # =====================
-        # TERMINAL
-        # =====================
+        # Terminal
 
         "pipeline_logs": [],
 
@@ -250,7 +231,7 @@ def init_state():
 
 
 # ─────────────────────────────────────
-# INITIALISATION
+# INIT
 # ─────────────────────────────────────
 
 init_state()
@@ -270,14 +251,25 @@ step = sidebar()
 
 
 # ─────────────────────────────────────
+# PAGE OUTIL INDEPENDANTE
+# ─────────────────────────────────────
+
+if st.session_state.page == "palettes":
+
+    show_palette_manager()
+
+    st.stop()
+
+
+
+# ─────────────────────────────────────
 # WORKFLOW
 # ─────────────────────────────────────
 
 
-# =====================================
+# ================================
 # ETAPE 0
-# PROJET
-# =====================================
+# ================================
 
 if step == 0:
 
@@ -285,10 +277,9 @@ if step == 0:
 
 
 
-# =====================================
+# ================================
 # ETAPE 1
-# PRETRAITEMENT
-# =====================================
+# ================================
 
 elif step == 1:
 
@@ -300,20 +291,15 @@ elif step == 1:
 
     if project_type == "SHO":
 
-
         show_preprocessing()
-
 
 
     elif project_type == "LRGB":
 
-
         show_lrgb_preprocessing()
 
 
-
     else:
-
 
         st.warning(
             "Type de projet non détecté."
@@ -321,10 +307,9 @@ elif step == 1:
 
 
 
-# =====================================
+# ================================
 # ETAPE 2
-# RECOMPOSITION
-# =====================================
+# ================================
 
 elif step == 2:
 
@@ -336,20 +321,15 @@ elif step == 2:
 
     if project_type == "SHO":
 
-
         sho_mixer()
-
 
 
     elif project_type == "LRGB":
 
-
         lrgb_mixer()
 
 
-
     else:
-
 
         st.warning(
             "Aucun type de projet confirmé."
@@ -357,25 +337,29 @@ elif step == 2:
 
 
 
-# =====================================
+# ================================
 # ETAPE 3
-# LAB
-# =====================================
+# ================================
 
 elif step == 3:
 
-    project_type = st.session_state.get("project_type")
+
+    project_type = st.session_state.get(
+        "project_type"
+    )
+
 
     if project_type == "SHO":
+
         show_sho_lab()
 
+
     elif project_type == "LRGB":
+
         show_rgb_lab()
 
 
-
     else:
-
 
         st.warning(
             "Projet non défini."
@@ -383,12 +367,11 @@ elif step == 3:
 
 
 
-# =====================================
+# ================================
 # ERREUR
-# =====================================
+# ================================
 
 else:
-
 
     st.error(
         "Étape workflow inconnue"

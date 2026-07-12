@@ -12,6 +12,16 @@ def sidebar():
 
 
     # ─────────────────────────────
+    # INITIALISATION NAVIGATION
+    # ─────────────────────────────
+
+    if "page" not in st.session_state:
+
+        st.session_state.page = "workflow"
+
+
+
+    # ─────────────────────────────
     # PROJET ACTIF
     # ─────────────────────────────
 
@@ -85,6 +95,41 @@ def sidebar():
 
 
     # ─────────────────────────────
+    # OUTILS
+    # ─────────────────────────────
+
+    st.sidebar.markdown(
+        "## 🛠️ Outils"
+    )
+
+
+
+    if st.sidebar.button(
+        "🎨 Gestion des palettes personnelles",
+        use_container_width=True
+    ):
+
+        st.session_state.page = "palettes"
+
+
+
+    if st.sidebar.button(
+        "🚀 Retour workflow",
+        use_container_width=True
+    ):
+
+        st.session_state.page = "workflow"
+
+
+
+
+    st.sidebar.markdown(
+        "---"
+    )
+
+
+
+    # ─────────────────────────────
     # WORKFLOW
     # ─────────────────────────────
 
@@ -147,7 +192,6 @@ def sidebar():
             )
 
 
-  
 
     st.sidebar.markdown(
         "---"
@@ -155,12 +199,14 @@ def sidebar():
 
 
 
-        # ─────────────────────────────
+    # ─────────────────────────────
     # FOOTER SIDEBAR
     # ─────────────────────────────
 
     st.sidebar.markdown(
+
         """
+
         <style>
 
         section[data-testid="stSidebar"] {
@@ -212,7 +258,9 @@ def sidebar():
         </div>
 
         """,
+
         unsafe_allow_html=True
+
     )
 
 

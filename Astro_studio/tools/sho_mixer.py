@@ -7,6 +7,12 @@ from core.processing import mix_sho, apply_palette
 from core.preview import make_preview
 from core.rgb_export import save_rgb_channels
 
+from core.palette_manager import (
+    load_custom_palettes,
+    save_custom_palette,
+    delete_custom_palette
+)
+
 
 
 # ─────────────────────────────────────
@@ -14,7 +20,11 @@ from core.rgb_export import save_rgb_channels
 # ─────────────────────────────────────
 
 @st.cache_data
-def load_sho_data(S_path, H_path, O_path):
+def load_sho_data(
+    S_path,
+    H_path,
+    O_path
+):
 
     S, _ = load_fits(S_path)
     H, _ = load_fits(H_path)
@@ -25,19 +35,45 @@ def load_sho_data(S_path, H_path, O_path):
 
 
 # ─────────────────────────────────────
+# PALETTES NATIVES
+# ─────────────────────────────────────
+
+DEFAULT_PALETTES = [
+
+    "Manual",
+    "Hubble SHO",
+    "HOO Boost",
+    "HOO Natural",
+    "Hα Rich",
+    "OIII Rich",
+    "Foraxx Pro",
+    "Gold & Blue",
+    "Teal & Orange"
+
+]
+
+
+
+# ─────────────────────────────────────
 # PAGE SHO MIXER
 # ─────────────────────────────────────
 
 def sho_mixer():
 
-    st.title("🌈 SHO Mixer")
+
+    st.title(
+        "🌈 SHO Mixer"
+    )
+
 
 
     # =========================
     # PROJET
     # =========================
 
-    workdir = st.session_state.get("workdir")
+    workdir = st.session_state.get(
+        "workdir"
+    )
 
 
     if not workdir:
@@ -66,6 +102,7 @@ def sho_mixer():
         and O_path.exists()
     ):
 
+
         st.error(
             "Fichiers SHO introuvables dans le dossier."
         )
@@ -75,7 +112,7 @@ def sho_mixer():
 
 
     # =========================
-    # CHARGEMENT
+    # CHARGEMENT FITS
     # =========================
 
     S, H, O = load_sho_data(
@@ -83,6 +120,38 @@ def sho_mixer():
         H_path,
         O_path
     )
+    # =========================
+    # PALETTES PERSONNELLES
+    # =========================
+
+    custom_palettes = load_custom_palettes()
+
+
+
+    palette_names = [
+
+        "Manual",
+        "Hubble SHO",
+        "HOO Boost",
+        "HOO Natural",
+        "Hα Rich",
+        "OIII Rich",
+        "Foraxx Pro",
+        "Gold & Blue",
+        "Teal & Orange"
+
+    ]
+
+
+
+    # ajout palettes utilisateur
+
+    for name in custom_palettes.keys():
+
+        if name not in palette_names:
+
+            palette_names.append(name)
+
 
 
 
@@ -108,23 +177,17 @@ def sho_mixer():
 
 
 
-    # Valeurs utilisées par le mode manuel
-
     if "sho_manual_values" not in st.session_state:
 
         st.session_state.sho_manual_values = (
+
             0.8,
             0.2,
             0.7,
             0.3,
             1.0
+
         )
-
-
-
-    if "sho_previous_palette" not in st.session_state:
-
-        st.session_state.sho_previous_palette = None
 
 
 
@@ -134,9 +197,13 @@ def sho_mixer():
     # =========================
 
     col_left, col_right = st.columns(
+
         [1, 2],
+
         gap="large"
+
     )
+
 
 
 
@@ -144,10 +211,15 @@ def sho_mixer():
     # CONTROLES
     # =====================================================
 
+
     with col_left:
 
 
-        st.subheader("⚙️ Contrôles")
+        st.subheader(
+
+            "⚙️ Contrôles"
+
+        )
 
 
 
@@ -155,126 +227,97 @@ def sho_mixer():
 
             "Choisir une palette SHO",
 
-            [
-                "Manual",
-                "Hubble SHO",
-                "HOO Boost",
-                "HOO Natural",
-                "Hα Rich",
-                "OIII Rich",
-                "Foraxx Pro",
-                "Gold & Blue",
-                "Teal & Orange"
-            ],
+            palette_names,
 
             key="sho_palette"
+
         )
 
 
 
-        # =========================
-        # CHARGE LA PALETTE
-        # POUR EDITEUR MANUEL
-        # =========================
+        # =================================================
+        # CHARGEMENT PALETTE PERSONNELLE
+        # =================================================
 
-        if palette != "Manual":
+        custom = None
 
-            st.session_state.sho_manual_values = apply_palette(
-                palette
+
+        if palette in custom_palettes:
+
+            custom = custom_palettes[palette]
+
+
+
+        if custom:
+
+
+            st.info(
+
+                f"""
+### 🎨 Palette personnelle
+
+**Nom :**
+{palette}
+
+
+**Objet :**
+{custom.get("objet","")}
+
+
+**Notes :**
+
+{custom.get("description","")}
+
+
+📅 Créée le :
+{custom.get("date","")}
+
+"""
+
             )
 
-            st.session_state.sho_previous_palette = palette
+
+
+            r_s, r_h, g_h, g_o, b_o = (
+
+                tuple(
+                    custom["coefficients"]
+                )
+
+            )
 
 
 
-
-        descriptions = {
-
-            "Manual":
-            """
-            Palette personnalisée.
-
-            Réglage manuel SII / Ha / OIII.
-            """,
+        elif palette != "Manual":
 
 
-            "Hubble SHO":
-            """
-            Palette SHO classique.
+            r_s, r_h, g_h, g_o, b_o = apply_palette(
 
-            SII → Rouge
-            Ha → Vert
-            OIII → Bleu
-            """,
+                palette
 
-
-            "HOO Boost":
-            """
-            Palette HOO renforcée.
-
-            Ha + OIII dominants.
-            """,
-
-
-            "HOO Natural":
-            """
-            Palette HOO naturelle.
-
-            Ha rouge,
-            OIII cyan/bleu.
-            """,
-
-
-            "Hα Rich":
-            """
-            Accentuation du H-alpha.
-            """,
-
-
-            "OIII Rich":
-            """
-            Accentuation de l'OIII.
-            """,
-
-
-            "Foraxx Pro":
-            """
-            Palette avancée inspirée Foraxx.
-            """,
-
-
-            "Gold & Blue":
-            """
-            Palette artistique chaud/froid.
-            """,
-
-
-            "Teal & Orange":
-            """
-            Palette artistique cyan/orange.
-            """
-        }
+            )
 
 
 
-        st.info(
-            descriptions[palette]
-        )
+        else:
 
 
+            r_s, r_h, g_h, g_o, b_o = (
 
-        # =========================
-        # TABLEAU PALETTES SHO
-        # =========================
+                st.session_state.sho_manual_values
+
+            )
+        # =================================================
+        # DOCUMENTATION PALETTES SHO
+        # =================================================
 
         with st.expander(
-            "🎨 Voir les paramètres des palettes SHO"
+            "📚 Référence des palettes SHO"
         ):
 
             st.markdown(
-                """
-
-### Configurations des palettes SHO
+"""
+## Paramètres des palettes SHO
 
 | Palette | R:SII | R:Hα | G:Hα | G:OIII | B:OIII |
 |---|---:|---:|---:|---:|---:|
@@ -287,85 +330,215 @@ def sho_mixer():
 | 🌅 Gold & Blue | 1.0 | 0.0 | 0.5 | 0.5 | 1.0 |
 | 🟠 Teal & Orange | 0.9 | 0.1 | 0.3 | 0.7 | 1.0 |
 
+---
+
+### Lecture rapide
+
+🔴 Rouge :
+- SII augmente les tons rouges chauds
+- Hα renforce les zones d'émission
+
+🟢 Vert :
+- Ha dominant = SHO classique
+- ajout OIII = tons cyan
+
+🔵 Bleu :
+- OIII dominant = nébuleuses bleutées
+
 """
             )
 
 
 
-        # =========================
-        # REGLAGES
-        # =========================
+        # =================================================
+        # MODE MANUEL
+        # =================================================
 
         if palette == "Manual":
 
 
-            r_s, r_h, g_h, g_o, b_o = (
-                st.session_state.sho_manual_values
+            st.markdown(
+                "### 🎛 Réglages manuels"
             )
 
 
             r_s = st.slider(
+
                 "R SII",
+
                 0.0,
                 1.0,
+
                 r_s
+
             )
 
 
             r_h = st.slider(
-                "R Ha",
+
+                "R Hα",
+
                 0.0,
                 1.0,
+
                 r_h
+
             )
 
 
             g_h = st.slider(
-                "G Ha",
+
+                "G Hα",
+
                 0.0,
                 1.0,
+
                 g_h
+
             )
 
 
             g_o = st.slider(
+
                 "G OIII",
+
                 0.0,
                 1.0,
+
                 g_o
+
             )
 
 
             b_o = st.slider(
+
                 "B OIII",
+
                 0.0,
                 1.0,
+
                 b_o
+
             )
 
 
+
             st.session_state.sho_manual_values = (
+
                 r_s,
                 r_h,
                 g_h,
                 g_o,
                 b_o
+
             )
 
 
-        else:
+
+            # =================================================
+            # SAUVEGARDE PALETTE PERSONNELLE
+            # =================================================
+
+            st.divider()
 
 
-            r_s, r_h, g_h, g_o, b_o = apply_palette(
-                palette
-            )
+            with st.expander(
+                "💾 Enregistrer cette palette personnelle"
+            ):
+
+
+                palette_name = st.text_input(
+
+                    "Nom de la palette",
+
+                    placeholder=
+                    "Ex : M42 rouge profond"
+
+                )
+
+
+                palette_object = st.text_input(
+
+                    "Objet",
+
+                    placeholder=
+                    "Ex : M42, NGC7000..."
+
+                )
+
+
+                palette_description = st.text_area(
+
+                    "Notes",
+
+                    placeholder=
+"""
+Exemples :
+
+- bon équilibre sur nébuleuses HII
+- réduit les étoiles vertes
+- contraste intéressant sur OIII
+- traitement préféré pour Newton 200/1000
+"""
+
+                )
+
+
+
+                if st.button(
+
+                    "💾 Sauvegarder palette"
+
+                ):
+
+
+                    if palette_name.strip():
+
+
+                        save_custom_palette(
+
+                            palette_name,
+
+                            (
+                                r_s,
+                                r_h,
+                                g_h,
+                                g_o,
+                                b_o
+                            ),
+
+                            description=palette_description,
+
+                            objet=palette_object
+
+                        )
+
+
+                        st.success(
+
+                            "Palette enregistrée ✔️"
+
+                        )
+
+
+                        st.rerun()
+
+
+                    else:
+
+
+                        st.warning(
+
+                            "Donne un nom à la palette."
+
+                        )
+        # =================================================
+        # STRETCH / ZOOM
+        # =================================================
+
         st.divider()
 
 
-
-        # =========================
-        # STRETCH / ZOOM
-        # =========================
 
         stretch = st.slider(
 
@@ -401,13 +574,16 @@ def sho_mixer():
 
 
 
-        # =========================
-        # VALIDATION
-        # =========================
+        # =================================================
+        # VALIDATION COMPOSITION SHO
+        # =================================================
 
         if st.button(
+
             "➡ Valider cette composition SHO"
+
         ):
+
 
 
             # création RGB linéaire
@@ -428,9 +604,9 @@ def sho_mixer():
 
 
 
-            # =========================
-            # EXPORT RGB
-            # =========================
+            # =====================
+            # EXPORT COUCHES RGB
+            # =====================
 
             save_rgb_channels(
 
@@ -444,48 +620,61 @@ def sho_mixer():
 
 
 
-            # =========================
+            # =====================
             # STOCKAGE WORKFLOW
-            # =========================
+            # =====================
 
             st.session_state.S = S
+
             st.session_state.H = H
+
             st.session_state.O = O
 
 
+
             st.session_state.R = R
+
             st.session_state.G = G
+
             st.session_state.B = B
+
 
 
             st.session_state.palette = palette
 
+
+
+            # passage SHO Lab
 
             st.session_state.workflow_step = 3
 
 
 
             st.success(
-                "Composition SHO validée ✔️ Passage au traitement luminance"
+
+                "Composition SHO validée ✔️ Passage au SHO Lab"
+
             )
 
 
             st.rerun()
-
-
-
     # =====================================================
     # PREVIEW
     # =====================================================
+
 
     with col_right:
 
 
         st.subheader(
+
             "👁 Preview"
+
         )
 
 
+
+        # recalcul dynamique
 
         R, G, B = mix_sho(
 
@@ -506,7 +695,9 @@ def sho_mixer():
         RGB = make_preview(
 
             R,
+
             G,
+
             B,
 
             stretch
@@ -514,6 +705,10 @@ def sho_mixer():
         )
 
 
+
+        # =========================
+        # ZOOM INSPECTION
+        # =========================
 
         if zoom > 1:
 
@@ -523,9 +718,13 @@ def sho_mixer():
                 RGB,
 
                 (
+
                     zoom,
+
                     zoom,
+
                     1
+
                 ),
 
                 order=1
@@ -539,5 +738,32 @@ def sho_mixer():
             RGB,
 
             use_container_width=True
+
+        )
+        # =========================
+        # INFORMATIONS COURANTES
+        # =========================
+
+        st.divider()
+
+
+        st.caption(
+
+            f"""
+🎨 Palette active : **{palette}**
+
+Valeurs :
+
+R:SII = {r_s:.2f}
+
+R:Hα = {r_h:.2f}
+
+G:Hα = {g_h:.2f}
+
+G:OIII = {g_o:.2f}
+
+B:OIII = {b_o:.2f}
+
+"""
 
         )
