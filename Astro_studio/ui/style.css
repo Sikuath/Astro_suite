@@ -134,3 +134,63 @@ div {
     font-size: 0.85rem;
     line-height: 1.4;
 }
+
+/* =========================
+   PALETTE EDITOR TERMINAL
+   MATRIX STYLE
+========================= */
+
+div[data-testid="stTextArea"] textarea {
+
+    background-color: rgba(0,0,0,0.90) !important;
+
+    color: #00ff88 !important;
+
+    font-family:
+        "Consolas",
+        "Courier New",
+        monospace !important;
+
+    font-size: 0.85rem !important;
+
+    line-height: 1.5 !important;
+
+    border-radius: 12px !important;
+
+    border: 1px solid rgba(0,255,136,0.5) !important;
+
+    caret-color: #00ff88 !important;
+
+}
+
+
+/* texte sélectionné */
+
+div[data-testid="stTextArea"] textarea::selection {
+
+    background: rgba(0,255,136,0.25);
+
+    color: white;
+
+}
+
+
+/* focus terminal */
+
+div[data-testid="stTextArea"] textarea:focus {
+
+    border: 1px solid #00ff88 !important;
+
+    box-shadow:
+        0 0 12px rgba(0,255,136,0.4);
+
+}
+
+
+/* placeholder */
+
+div[data-testid="stTextArea"] textarea::placeholder {
+
+    color: #557755;
+
+}
