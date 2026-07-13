@@ -3,5 +3,5 @@
     "siril_path": "C:\\Program Files\\Siril\\bin\\siril-cli.exe",
     "siril_cli": "C:\\Program Files\\Siril\\bin\\siril-cli.exe",
     "siril_gui": "C:\\Program Files\\Siril\\bin\\siril.exe",
-    "project_type": "SHO"
+    "project_type": "LRGB"
 }
