@@ -1,7 +1,7 @@
 # ==========================================================
 # Astro IA
 # Client Ollama Vision
-# Analyse image astrophotographique
+# Analyse image astrophotographique LLaVA
 # ==========================================================
 
 
@@ -24,15 +24,16 @@ def analyse_image(
 
 ):
 
-
     """
-    Analyse visuelle d'une preview PNG
-    avec Ollama Vision.
+    Analyse visuelle d'une image PNG
+    préparée pour Ollama Vision.
 
-    L'image reçue doit déjà être
-    préparée par vision_preview.py.
+    Cette fonction réalise uniquement
+    une observation visuelle.
 
-    LLaVA ne réalise aucune mesure scientifique.
+    Aucune mesure scientifique :
+    FWHM, HFR, seeing, suivi, bruit,
+    photométrie ou résolution.
     """
 
 
@@ -47,7 +48,6 @@ def analyse_image(
 
     if not image_path.exists():
 
-
         return (
 
             "Image non disponible."
@@ -56,56 +56,166 @@ def analyse_image(
 
 
 
+    # ======================================================
+    # PROMPT VISION
+    # ======================================================
+
+
     prompt = """
 
 Tu es Astro IA Vision.
 
+Tu analyses une prévisualisation
+étirée d'une image astrophotographique.
 
-Tu analyses uniquement l'apparence
-visuelle de cette image astrophotographique.
+Cette image a été préparée pour révéler
+le signal faible visible.
+
+Tu n'as accès qu'à l'image.
+
+Tu ne connais pas :
+
+- le nom de l'objet
+- les coordonnées
+- la caméra
+- la focale
+- les paramètres d'acquisition
 
 
-IMPORTANT :
+Ton rôle est uniquement une observation
+visuelle de ce qui est réellement visible.
 
-Tu ne mesures jamais :
+
+Commence obligatoirement par :
+
+Observation visuelle uniquement.
+
+
+
+==================================================
+1 - FOND DE CIEL
+==================================================
+
+
+Décris :
+
+- homogénéité du fond
+- présence éventuelle de gradients lumineux
+- zones plus claires ou plus sombres
+- variations visibles du fond
+
+
+
+==================================================
+2 - ETOILES
+==================================================
+
+
+Décris uniquement visuellement :
+
+- densité apparente d'étoiles
+- différence entre étoiles brillantes et faibles
+- aspect général des étoiles
+- étoiles ponctuelles, diffuses ou allongées
+
+
+Interdiction absolue :
+
+Ne jamais donner :
 
 - FWHM
 - HFR
 - seeing
+- excentricité
+- qualité de suivi
 - résolution
-- dérive
-- tilt
-- bruit scientifique
-- saturation quantitative
+- bruit mesuré
+- photométrie
 
 
-Tu fournis uniquement une observation visuelle.
+
+==================================================
+3 - STRUCTURES ASTRONOMIQUES
+==================================================
 
 
-Tu peux décrire :
+Recherche uniquement les structures
+visibles dans l'image :
 
-- structures visibles
-- nébulosités apparentes
-- étoiles visibles
-- gradients apparents
-- défauts visuels évidents
-
-
-Toute réponse doit commencer par :
-
-"Observation visuelle uniquement."
+- amas d'étoiles apparent
+- nébulosités
+- extensions faibles
+- zones sombres
+- poussières apparentes
+- zones de contraste
 
 
-Si une information est impossible à voir :
+IMPORTANT :
+
+Si une structure n'est pas clairement visible,
+ne dis pas :
+
+"Il n'y a pas de structure."
+
+
+Utilise :
+
+"Aucune structure clairement identifiable
+sur cette prévisualisation."
+
+
+
+==================================================
+4 - DEFAUTS VISUELS
+==================================================
+
+
+Signale uniquement les défauts visibles :
+
+- gradients importants
+- dominante de couleur
+- zones saturées
+- artefacts
+- traces
+- problèmes évidents
+
+
+Ne déduis jamais un problème
+à partir d'une absence d'information.
+
+
+
+==================================================
+REGLES ABSOLUES
+==================================================
+
+
+Tu ne réalises aucune mesure scientifique.
+
+Tu ne peux pas déterminer :
+
+- qualité réelle de l'acquisition
+- mise au point
+- seeing
+- suivi
+- calibration
+- sensibilité
+
+
+Tu ne dois jamais identifier
+un objet astronomique.
+
+
+Tu ne dois jamais transformer
+une observation visuelle en conclusion scientifique.
+
+
+Si une information n'est pas visible :
 
 "Non déterminable visuellement."
 
 
-Ne transforme jamais une observation
-en mesure scientifique.
-
-
-Répond en français.
+Réponds uniquement en français.
 
 """
 
@@ -123,12 +233,12 @@ Répond en français.
 
                 {
 
-                    "role":"user",
+                    "role": "user",
 
-                    "content":prompt,
+                    "content": prompt,
 
 
-                    "images":[
+                    "images": [
 
                         str(image_path)
 
@@ -141,17 +251,47 @@ Répond en français.
 
             options={
 
-                "temperature":0.1,
+                "temperature": 0.1,
 
-                "num_ctx":4096
+                "num_ctx": 4096
 
             }
 
         )
 
 
+        result = response[
 
-        return response["message"]["content"]
+            "message"
+
+        ][
+
+            "content"
+
+        ]
+
+
+
+        # DEBUG TEMPORAIRE
+        print(
+            "=============================="
+        )
+
+        print(
+            "DEBUG REPONSE LLAVA"
+        )
+
+        print(
+            result
+        )
+
+        print(
+            "=============================="
+        )
+
+
+
+        return result
 
 
 

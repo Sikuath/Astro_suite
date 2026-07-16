@@ -1,153 +1,383 @@
-# Workflow GIMP astrophotographie
+# Workflow GIMP - Astro IA
+# Traitement astrophotographique avancé
 
 
-## Objectif
+## Rôle de GIMP dans Astro IA
 
 
-GIMP intervient après Siril.
+GIMP intervient principalement après la séparation étoiles/fond réalisée dans Siril.
 
 
-Son rôle est :
+Son rôle est le traitement artistique et esthétique :
 
-- finition esthétique
-- ajustement visuel
-- préparation publication
-
-
-GIMP ne doit pas remplacer le traitement scientifique réalisé dans Siril.
-
-
-
----
-
-# Principes
-
-
-Toujours travailler :
-
-- avec des calques
-- avec des masques
-- en conservant une version originale
-
-
-Éviter les modifications destructives.
+- révéler les détails faibles
+- améliorer les couleurs
+- contrôler le contraste
+- traiter séparément les étoiles et le fond
 
 
 
----
+GIMP ne remplace pas Siril pour :
 
-# Gestion dynamique
-
-
-Outils principaux :
-
-- niveaux
-- courbes
+- calibration photométrique
+- résolution astrométrique
+- extraction scientifique
+- séparation initiale étoiles/fond
 
 
-Objectifs :
 
-- révéler les faibles extensions
-- conserver les étoiles
-- éviter les noirs bouchés
+==================================================
 
+# 1 - Ouverture de l'image
 
----
-
-# Gestion des couleurs
+==================================================
 
 
-Utiliser :
-
-- balance des couleurs
-- teinte/saturation
+Importer les fichiers issus de Siril.
 
 
-Objectifs :
+Formats recommandés :
 
-- équilibre global
-- cohérence des couleurs
-
-
-Éviter :
-
-- saturation excessive
-- dominantes artificielles
+- TIFF 16 bits
 
 
----
+Conserver :
 
-# Travail sur les étoiles
+- dynamique maximale
+- profondeur couleur
+- informations du signal
 
 
-Les étoiles peuvent être traitées séparément.
+
+Eviter :
+
+- conversion JPEG avant traitement
+- traitements destructifs
 
 
-Approche possible :
 
-- séparation étoiles/fond
-- réduction légère des étoiles
-- traitement du fond séparément
+==================================================
+
+# 2 - Traitement de la starless
+
+==================================================
+
+
+La starless contient :
+
+- nébulosités
+- galaxies
+- structures faibles
+- fond de ciel
 
 
 Objectif :
 
-mettre en valeur les structures faibles.
+Révéler le signal sans créer d'artifices.
+
+
+
+==================================================
+
+# 3 - Gestion des couleurs
+
+==================================================
+
+
+Actions possibles :
+
+
+## Ajustement des niveaux couleurs
+
+
+Objectif :
+
+- corriger les dominantes
+- équilibrer les canaux
+
+
+---
+
+## Balance des couleurs
+
+
+Utilisation :
+
+- correction globale ou locale
+- harmonisation des teintes
+
+
+---
+
+## Renforcement des couleurs
+
+
+Utilisation :
+
+Modérée.
+
+
+Objectif :
+
+- révéler les nuances faibles
+- éviter la saturation excessive
 
 
 
 ---
 
-# Gestion du bruit
+## Rehaussement des couleurs
 
 
-Utiliser :
-
-- masques
-- réduction locale
+Possible après correction du fond.
 
 
-Éviter :
+Contrôler :
 
-- lissage global destructeur
+- bruit chromatique
+- zones saturées
 
 
-Le bruit est préférable à la perte de détails.
+
+==================================================
+
+# 4 - Traitement du contraste
+
+==================================================
+
+
+## Courbes
+
+
+Utilisation :
+
+- augmenter le contraste local
+- révéler les extensions faibles
+
+
+Méthode :
+
+- plusieurs petites corrections
+- éviter une courbe trop agressive
 
 
 
 ---
 
-# Contraste local
+## Niveaux
 
 
-Utiliser avec modération :
+Utilisation :
 
-- contraste
-- netteté
+- ajustement du point noir
+- récupération de dynamique
 
 
-Éviter :
+Attention :
+
+Ne pas écraser le fond de ciel.
+
+
+
+---
+
+## Filtre passe haut
+
+
+Objectif :
+
+Accentuer certains détails.
+
+
+Utilisation :
+
+Faible intensité.
+
+
+Surveiller :
 
 - halos
 - contours artificiels
 
 
----
 
-# Export
+==================================================
 
+# 5 - Réduction du bruit
 
-Avant export :
-
-Vérifier :
-
-- couleurs naturelles
-- absence de saturation excessive
-- conservation des détails faibles
+==================================================
 
 
-Formats recommandés :
+Appliquer uniquement lorsque nécessaire.
 
-- TIFF pour archivage
-- PNG/JPEG pour diffusion
+
+Objectif :
+
+Réduire :
+
+- bruit de luminance
+- bruit chromatique
+
+
+Méthode recommandée :
+
+- masques
+- traitement localisé
+
+
+Eviter :
+
+- réduction globale excessive
+
+
+Un bruit trop réduit peut détruire :
+
+- extensions faibles
+- textures fines
+
+
+
+==================================================
+
+# 6 - Masques et calques
+
+==================================================
+
+
+Utiliser les calques pour conserver
+un traitement réversible.
+
+
+Exemples :
+
+
+Calque fond :
+
+- contraste
+- couleurs
+- réduction bruit
+
+
+Calque détails :
+
+- accentuation
+- passe haut
+
+
+Calque étoiles :
+
+- luminosité
+- saturation
+- taille apparente
+
+
+
+Toujours privilégier :
+
+- masques de fusion
+- opacité contrôlée
+
+
+
+==================================================
+
+# 7 - Traitement des étoiles
+
+==================================================
+
+
+Les étoiles sont traitées séparément.
+
+
+Objectifs :
+
+- éviter une image surchargée
+- conserver un aspect naturel
+
+
+Actions possibles :
+
+- réduction légère de luminosité
+- réduction de dominance
+- correction couleur
+
+
+Ne jamais :
+
+- supprimer toutes les étoiles
+- créer un fond artificiel
+
+
+
+==================================================
+
+# 8 - Retour vers Siril
+
+==================================================
+
+
+Après traitement de la starless :
+
+
+Exporter :
+
+- fond traité
+- couche étoiles
+
+
+Retour dans Siril pour :
+
+- reconstruction
+- contrôle du raccord
+- fusion finale
+
+
+
+==================================================
+
+# 9 - Finition finale dans GIMP
+
+==================================================
+
+
+Après reconstruction Siril :
+
+
+Actions possibles :
+
+- contraste final
+- balance couleurs finale
+- saturation légère
+- corrections locales
+- préparation publication
+
+
+Objectif :
+
+Obtenir une image naturelle et équilibrée.
+
+
+
+==================================================
+
+# Règles Astro IA GIMP
+
+
+Toujours privilégier :
+
+- traitements progressifs
+- calques séparés
+- masques
+- conservation du signal
+
+
+Ne jamais recommander :
+
+- compression JPEG pendant le traitement
+- saturation excessive
+- réduction bruit destructive
+- accentuation forte créant des halos
+
+
+GIMP est utilisé pour la finition esthétique,
+pas pour remplacer les traitements astronomiques réalisés dans Siril.

@@ -1,5 +1,287 @@
 import streamlit as st
 from pathlib import Path
+import base64
+
+
+
+# ==========================================================
+# BACKGROUND GLOBAL
+# ==========================================================
+
+def load_background():
+
+
+    img = (
+
+        Path(__file__)
+        .parent
+        /
+        "background.jpg"
+
+    )
+
+
+    if not img.exists():
+
+        return
+
+
+
+    image64 = base64.b64encode(
+
+        img.read_bytes()
+
+    ).decode()
+
+
+
+    css = f"""
+
+<style>
+
+
+/* ==================================================
+   APPLICATION BACKGROUND
+================================================== */
+
+
+.stApp {{
+
+    background:
+
+        linear-gradient(
+
+            rgba(5,10,20,0.40),
+
+            rgba(5,10,20,0.40)
+
+        ),
+
+        url(
+        "data:image/jpeg;base64,{image64}"
+        );
+
+
+    background-size:
+
+        cover;
+
+
+    background-position:
+
+        center;
+
+
+    background-attachment:
+
+        fixed;
+
+}}
+
+
+
+/* ==================================================
+   MAIN CONTAINER GLASS
+================================================== */
+
+
+div.block-container {{
+
+    background:
+
+        rgba(15,18,30,0.30);
+
+
+    backdrop-filter:
+
+        blur(8px);
+
+
+    border-radius:
+
+        20px;
+
+
+    padding:
+
+        2rem;
+
+
+    margin-top:
+
+        1rem;
+
+}}
+
+
+
+/* ==================================================
+   SIDEBAR GLASS
+================================================== */
+
+
+section[data-testid="stSidebar"] {{
+
+    background:
+
+        rgba(10,15,30,0.55);
+
+
+    backdrop-filter:
+
+        blur(12px);
+
+}}
+
+
+
+section[data-testid="stSidebar"] > div {{
+
+    background:
+
+        transparent;
+
+}}
+
+
+
+/* ==================================================
+   TEXTES
+================================================== */
+
+
+h1,h2,h3,h4,h5,h6 {{
+
+    color:
+
+        white;
+
+}}
+
+
+
+p,label {{
+
+    color:
+
+        #ECECEC;
+
+}}
+
+
+
+/* ==================================================
+   BUTTONS
+================================================== */
+
+
+.stButton > button {{
+
+    background:
+
+        rgba(80,120,255,0.25);
+
+
+    color:
+
+        white;
+
+
+    border-radius:
+
+        10px;
+
+
+    border:
+
+        1px solid rgba(255,255,255,0.25);
+
+}}
+
+
+
+.stButton > button:hover {{
+
+    background:
+
+        rgba(80,120,255,0.45);
+
+}}
+
+
+
+/* ==================================================
+   CODE / TERMINAL IA
+================================================== */
+
+
+.stCode {{
+
+    background:
+
+        rgba(0,0,0,0.85);
+
+
+    border-radius:
+
+        12px;
+
+}}
+
+
+
+.stCode code {{
+
+    color:
+
+        #00ff88;
+
+
+    font-family:
+
+        Consolas,
+        Courier New,
+        monospace;
+
+}}
+
+
+
+/* ==================================================
+   COMPACT UI
+================================================== */
+
+
+.block-container {{
+
+    padding-top:
+
+        1rem;
+
+
+    padding-bottom:
+
+        1rem;
+
+}}
+
+
+
+</style>
+
+"""
+
+
+    st.markdown(
+
+        css,
+
+        unsafe_allow_html=True
+
+    )
+
+
+
 
 
 # ==========================================================
@@ -8,23 +290,15 @@ from pathlib import Path
 
 def show_sidebar(config):
 
+
+    # Chargement fond global
+
+    load_background()
+
+
+
     with st.sidebar:
 
-
-        # ==========================================
-        # IMAGE
-        # ==========================================
-
-        img = Path(
-            "ui/background.jpg"
-        )
-
-        if img.exists():
-
-            st.image(
-                str(img),
-                use_container_width=True
-            )
 
 
         # ==========================================
@@ -32,15 +306,21 @@ def show_sidebar(config):
         # ==========================================
 
         st.title(
+
             "🤖 Astro IA"
+
         )
 
+
         st.caption(
+
             "Assistant astrophotographique local"
+
         )
 
 
         st.divider()
+
 
 
         # ==========================================
@@ -48,7 +328,9 @@ def show_sidebar(config):
         # ==========================================
 
         st.subheader(
+
             "📂 Workflow"
+
         )
 
 
@@ -65,23 +347,35 @@ def show_sidebar(config):
         ]
 
 
+
         for name, key in workflow:
 
 
             if st.session_state.get(
+
                 key,
+
                 False
+
             ):
 
+
                 st.success(
+
                     f"✔ {name}"
+
                 )
+
 
             else:
 
+
                 st.info(
+
                     f"○ {name}"
+
                 )
+
 
 
         st.divider()
@@ -93,32 +387,44 @@ def show_sidebar(config):
         # ==========================================
 
         st.subheader(
+
             "🖥 IA"
+
         )
+
 
 
         ollama = config.get(
+
             "ollama",
+
             {}
+
         )
 
 
+
         st.write(
+
             f"**Assistant :** "
             f"{ollama.get(
                 'default_model',
                 'Non défini'
             )}"
+
         )
 
 
         st.write(
+
             f"**Vision :** "
             f"{ollama.get(
                 'vision_model',
                 'Non défini'
             )}"
+
         )
+
 
 
         st.divider()
@@ -130,41 +436,60 @@ def show_sidebar(config):
         # ==========================================
 
         st.subheader(
+
             "🔭 Session"
+
         )
 
 
         instrument = st.session_state.get(
+
             "instrument",
+
             "Aucun"
+
         )
 
 
         objet = st.session_state.get(
+
             "object_name",
+
             "Aucun"
+
         )
 
 
         image = st.session_state.get(
+
             "image_name",
+
             "Aucune"
+
         )
 
 
+
         st.write(
+
             f"**Instrument :** {instrument}"
+
         )
 
 
         st.write(
+
             f"**Objet :** {objet}"
+
         )
 
 
         st.write(
+
             f"**Image :** {image}"
+
         )
+
 
 
         st.divider()
@@ -176,12 +501,16 @@ def show_sidebar(config):
         # ==========================================
 
         st.caption(
+
             "Astro Suite"
+
         )
 
 
         st.caption(
+
             "Astro IA v0.1"
+
         )
 
 
@@ -190,45 +519,74 @@ def show_sidebar(config):
         # FOOTER
         # ==========================================
 
+
         st.markdown(
 
             """
 
-            <style>
+<style>
 
-            .astro-sidebar-footer {
-
-                margin-top: 40px;
-
-                padding-top: 15px;
-
-                border-top:
-                1px solid rgba(255,255,255,0.15);
-
-                text-align: center;
-
-                font-size: 0.55em;
-
-                color: #888;
-
-                line-height: 1.5;
-
-            }
-
-            </style>
+.astro-sidebar-footer {
 
 
-            <div class="astro-sidebar-footer">
+    margin-top:
 
-            © 2026 <b>Sikuath</b> — Astro Suite<br>
-            Logiciel distribué sous licence MIT.<br>
-            Images, captures d'écran et contenus graphiques<br>
-            sous licence <b>CC BY-NC-ND 4.4</b>,<br>
-            sauf mention contraire.
+        40px;
 
-            </div>
 
-            """,
+    padding-top:
+
+        15px;
+
+
+    border-top:
+
+        1px solid rgba(255,255,255,0.15);
+
+
+    text-align:
+
+        center;
+
+
+    font-size:
+
+        0.55em;
+
+
+    color:
+
+        #999;
+
+
+    line-height:
+
+        1.5;
+
+}
+
+
+</style>
+
+
+
+<div class="astro-sidebar-footer">
+
+
+© 2026 <b>Sikuath</b> — Astro Suite<br>
+
+Logiciel distribué sous licence MIT.<br>
+
+Images, captures d'écran et contenus graphiques<br>
+
+sous licence <b>CC BY-NC-ND 4.4</b>,<br>
+
+sauf mention contraire.
+
+
+</div>
+
+""",
 
             unsafe_allow_html=True
 

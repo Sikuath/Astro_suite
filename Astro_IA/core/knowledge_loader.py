@@ -1,43 +1,79 @@
 # ==========================================================
 # Astro IA
 # Knowledge Loader
-# Chargement documentation astrophotographique
+# Chargement hiérarchisé de la base de connaissances
 # ==========================================================
 
 from pathlib import Path
 
 
-# dossier documentation
+# ==========================================================
+# DOSSIER DOCUMENTATION
+# ==========================================================
 
-KNOWLEDGE_DIR = Path(__file__).parent.parent / "knowledge"
-
+KNOWLEDGE_DIR = (
+    Path(__file__).parent.parent / "knowledge"
+)
 
 
 # ==========================================================
-# CHARGEMENT FICHIER
+# CHARGEMENT DOCUMENT
 # ==========================================================
 
 def load_document(filename):
 
     path = KNOWLEDGE_DIR / filename
 
-
     if not path.exists():
+        return f"""
+DOCUMENT ABSENT
 
-        return (
-            "Information non disponible "
-            "avec les données fournies."
+Fichier :
+{filename}
+"""
+
+    try:
+        return path.read_text(
+            encoding="utf-8"
         )
 
+    except Exception as e:
+        return f"""
+ERREUR DE LECTURE
 
-    return path.read_text(
-        encoding="utf-8"
-    )
+Fichier :
+{filename}
 
+Erreur :
+{e}
+"""
 
 
 # ==========================================================
-# SELECTION DOCUMENTS
+# AJOUT DOCUMENT
+# ==========================================================
+
+def add_document(
+    documents,
+    title,
+    filename
+):
+
+    documents.append(
+        f"""
+
+############################################################
+# {title}
+############################################################
+
+{load_document(filename)}
+
+"""
+    )
+
+
+# ==========================================================
+# CONSTRUCTION BASE DE CONNAISSANCES
 # ==========================================================
 
 def get_relevant_knowledge(
@@ -45,76 +81,111 @@ def get_relevant_knowledge(
     camera=None
 ):
 
-
     documents = []
 
+    # ======================================================
+    # 1 - GARDE-FOUS
+    # ======================================================
 
-
-    # règles générales
-
-    documents.append(
-        load_document(
-            "regles_astro.md"
-        )
+    add_document(
+        documents,
+        "INTERDICTIONS ET GARDE-FOUS",
+        "interdictions.md"
     )
 
+    # ======================================================
+    # 2 - REGLES GENERALES
+    # ======================================================
 
+    add_document(
+        documents,
+        "REGLES GENERALES ASTRO IA",
+        "regles_astro.md"
+    )
+    
 
-    # Siril toujours présent
+    # ======================================================
+    # 3 - BIBLIOTHEQUE DES DEFAUTS VISUELS
+    # ======================================================
 
-    documents.append(
-        load_document(
-            "workflow_siril.md"
-        )
+    add_document(
+        documents,
+        "BIBLIOTHEQUE DES DEFAUTS VISUELS",
+        "defauts_visuels.md"
     )
 
+    # ======================================================
+    # 4 - WORKFLOW COMPLET
+    # ======================================================
 
+    add_document(
+        documents,
+        "WORKFLOW COMPLET SIRIL + GIMP",
+        "workflow_traitement_complet.md"
+    )
 
-    # workflow spécifique
+    # ======================================================
+    # 5 - PROCEDURES SIRIL
+    # ======================================================
 
-    if workflow == "SHO":
+    add_document(
+        documents,
+        "PROCEDURES DETAILLEES SIRIL",
+        "workflow_siril.md"
+    )
 
-        documents.append(
-            load_document(
+    # ======================================================
+    # 6 - PROCEDURES GIMP
+    # ======================================================
+
+    add_document(
+        documents,
+        "PROCEDURES DETAILLEES GIMP",
+        "workflow_gimp.md"
+    )
+
+    # ======================================================
+    # 7 - WORKFLOW SPECIFIQUE
+    # ======================================================
+
+    if workflow:
+
+        workflow = workflow.upper()
+
+        if workflow == "SHO":
+
+            add_document(
+                documents,
+                "WORKFLOW SHO",
                 "workflow_sho.md"
             )
-        )
 
+        elif workflow == "LRGB":
 
-    elif workflow == "LRGB":
-
-        documents.append(
-            load_document(
+            add_document(
+                documents,
+                "WORKFLOW LRGB",
                 "workflow_lrgb.md"
             )
-        )
 
-
-
-    # GIMP
-
-    documents.append(
-        load_document(
-            "workflow_gimp.md"
-        )
-    )
-
-
-
-    # caméra
+    # ======================================================
+    # 8 - CAMERA
+    # ======================================================
 
     if camera:
 
-        if "ASI2600" in camera:
+        camera_upper = camera.upper()
 
-            documents.append(
-                load_document(
-                    "asi2600mm.md"
-                )
+        if "ASI2600" in camera_upper:
+
+            add_document(
+                documents,
+                "CAMERA ZWO ASI2600MM PRO",
+                "asi2600mm.md"
             )
 
+    # ======================================================
+    # CONTEXTE FINAL
+    # ======================================================
 
-
-    return "\n\n".join(
-        documents
-    )
+    return "\n\n".join(documents)

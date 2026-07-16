@@ -4,16 +4,26 @@
 
 .stApp {
 
-    background-image:
-        linear-gradient(
-            rgba(5,10,20,0.55),
-            rgba(5,10,20,0.55)
-        ),
-        url("background.jpg");
+    background:
 
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+        linear-gradient(
+            rgba(5,10,20,0.60),
+            rgba(5,10,20,0.60)
+        ),
+
+        url("data:image/jpg;base64,TON_IMAGE_ICI");
+
+
+    background-size:
+        cover;
+
+
+    background-position:
+        center;
+
+
+    background-attachment:
+        fixed;
 }
 
 

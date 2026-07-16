@@ -236,14 +236,14 @@ context = {
 
 
 
-    "exposure":
+    "fits_exposure":
 
-        safe_float(
-            header.get(
-                "EXPTIME",
-                0
-            )
-        ),
+    safe_float(
+        header.get(
+            "EXPTIME",
+            0
+        )
+    ),
 
 
 
@@ -829,49 +829,7 @@ if result:
 
             st.session_state.vision_result = vision_result
 
-
-
-
-            # DEBUG LLaVA
-
-
-            st.write(
-
-                "DEBUG LLaVA"
-
-            )
-
-
-            st.write(
-
-                "Chemin envoyé :",
-
-                vision_path
-
-            )
-
-
-            st.write(
-
-                "Existe :",
-
-                vision_path.exists()
-
-            )
-
-
-            st.write(
-
-                "Taille :",
-
-                vision_path.stat().st_size
-
-            )
-
-
-
-
-
+        
             # ==================================================
             # ETAPE 3
             # ANALYSE SCIENTIFIQUE QWEN

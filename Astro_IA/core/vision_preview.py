@@ -1,7 +1,7 @@
 # ==========================================================
 # Astro IA
 # Génération preview vision LLaVA
-# FITS linéaire RGB -> PNG couleur
+# FITS linéaire -> PNG couleur étiré astro
 # ==========================================================
 
 
@@ -17,15 +17,16 @@ from core.config import load_config
 
 
 # ==========================================================
-# STRETCH CANAL
+# STRETCH ASTRONOMIQUE
 # ==========================================================
 
 
 def stretch_channel(channel):
 
     """
-    Stretch visuel astronomique.
-    Usage uniquement affichage LLaVA.
+    Stretch asinh astronomique.
+    Destiné uniquement à la vision LLaVA.
+    Aucun traitement scientifique.
     """
 
     channel = np.asarray(
@@ -42,51 +43,61 @@ def stretch_channel(channel):
     )
 
 
-    low = np.percentile(
+    # retrait fond de ciel
+    background = np.percentile(
         channel,
-        0.5
+        5
     )
+
+
+    channel = channel - background
+
+
+    channel[channel < 0] = 0
+
+
+
+    # normalisation robuste
 
     high = np.percentile(
         channel,
-        99.7
+        99.5
     )
 
 
-    if high <= low:
+    if high <= 0:
 
         raise ValueError(
-            "Contraste impossible."
+            "Signal inexploitable."
         )
 
 
     channel = np.clip(
         channel,
-        low,
+        0,
         high
     )
 
 
-    channel = (
-        channel - low
-    ) / (
-        high - low
-    )
+    channel /= high
 
 
-    stretch = 10.0
+
+    # stretch asinh type astro
+
+    strength = 15.0
 
 
     channel = (
 
         np.arcsinh(
-            stretch * channel
+            strength * channel
         )
 
         /
 
         np.arcsinh(
-            stretch
+            strength
         )
 
     )
@@ -101,18 +112,19 @@ def stretch_channel(channel):
 # ==========================================================
 
 
-def create_vision_preview(fits_path):
+def create_vision_preview(
+    fits_path
+):
 
 
     """
-    Création d'une image PNG couleur
-    destinée à LLaVA.
+    Création PNG couleur pour LLaVA.
 
-    Aucun calcul scientifique :
-    - FWHM
-    - HFR
-    - bruit
-    - photométrie
+    Compatible :
+    - FITS mono
+    - FITS RGB ASI/Siril
+
+    Aucun calcul scientifique.
     """
 
 
@@ -132,7 +144,7 @@ def create_vision_preview(fits_path):
 
 
     # ======================================================
-    # DOSSIER SORTIE
+    # DOSSIER TEMP
     # ======================================================
 
 
@@ -156,7 +168,7 @@ def create_vision_preview(fits_path):
     if not images_dir:
 
         raise ValueError(
-            "Chemin images absent du config.json"
+            "Chemin images absent config.json"
         )
 
 
@@ -206,12 +218,13 @@ def create_vision_preview(fits_path):
     if data is None:
 
         raise ValueError(
-            "Aucune donnée FITS."
+            "Aucune donnée FITS"
         )
 
 
 
-    print("\n==============================")
+    print()
+    print("==============================")
     print("DEBUG FITS VISION")
     print("==============================")
     print(
@@ -224,9 +237,12 @@ def create_vision_preview(fits_path):
     )
     print(
         "NAXIS :",
-        header.get("NAXIS")
+        header.get(
+            "NAXIS"
+        )
     )
-    print("==============================\n")
+    print("==============================")
+    print()
 
 
 
@@ -238,16 +254,25 @@ def create_vision_preview(fits_path):
 
 
     # ======================================================
-    # FITS RGB
+    # RGB FITS
     # ======================================================
 
 
-    if data.ndim == 3 and data.shape[0] == 3:
+    if (
+
+        data.ndim == 3
+
+        and
+
+        data.shape[0] == 3
+
+    ):
 
 
         print(
             "FITS RGB détecté"
         )
+
 
 
         r = stretch_channel(
@@ -265,18 +290,23 @@ def create_vision_preview(fits_path):
         )
 
 
-        rgb = np.dstack(
+        rgb = np.stack(
+
             (
                 r,
                 g,
                 b
-            )
+
+            ),
+
+            axis=2
+
         )
 
 
 
     # ======================================================
-    # MONO
+    # MONO FITS
     # ======================================================
 
 
@@ -293,12 +323,17 @@ def create_vision_preview(fits_path):
         )
 
 
-        rgb = np.dstack(
+        rgb = np.stack(
+
             (
                 mono,
                 mono,
                 mono
-            )
+
+            ),
+
+            axis=2
+
         )
 
 
@@ -307,13 +342,15 @@ def create_vision_preview(fits_path):
 
 
         raise ValueError(
+
             f"Format FITS non supporté : {data.shape}"
+
         )
 
 
 
     # ======================================================
-    # PNG
+    # CONVERSION PNG
     # ======================================================
 
 
@@ -332,15 +369,15 @@ def create_vision_preview(fits_path):
 
     img = Image.fromarray(
         rgb,
-        "RGB"
+        mode="RGB"
     )
 
 
 
     img.thumbnail(
         (
-            1024,
-            1024
+            1536,
+            1536
         )
     )
 
@@ -364,14 +401,10 @@ def create_vision_preview(fits_path):
 
 
 
-# ==========================================================
-# TEST CHARGEMENT MODULE
-# ==========================================================
-
-
 print(
     "vision_preview.py chargé OK"
 )
+
 
 print(
     "create_vision_preview disponible"
