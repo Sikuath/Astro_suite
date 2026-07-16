@@ -1,12 +1,13 @@
 # ==========================================================
 # Astro IA
-# Page 02 - Analyse acquisition
+# Page 02 - Analyse astrophotographique
 # PARTIE 1/2
 # ==========================================================
 
 
 import streamlit as st
 from pathlib import Path
+
 
 
 from core.fov_calculator import calculate_fov
@@ -29,6 +30,7 @@ from core.vision_preview import create_vision_preview
 
 
 
+
 # ==========================================================
 # TITRE
 # ==========================================================
@@ -39,17 +41,23 @@ st.title(
 
 
 
+
 # ==========================================================
 # VERIFICATION FITS
 # ==========================================================
 
 if not st.session_state.get(
+
     "fits_loaded",
+
     False
+
 ):
 
     st.warning(
+
         "⚠️ Aucun FITS validé."
+
     )
 
     st.stop()
@@ -57,9 +65,13 @@ if not st.session_state.get(
 
 
 header = st.session_state.get(
+
     "fits_header",
+
     {}
+
 )
+
 
 
 
@@ -74,12 +86,19 @@ config = load_config()
 siril_path = (
 
     config
+
     .get(
+
         "paths",
+
         {}
+
     )
+
     .get(
+
         "siril"
+
     )
 
 )
@@ -88,11 +107,15 @@ siril_path = (
 
 if not siril_path:
 
+
     st.error(
+
         "Chemin Siril absent du config.json"
+
     )
 
     st.stop()
+
 
 
 
@@ -101,38 +124,51 @@ if not siril_path:
 # ==========================================================
 
 fits_path = st.session_state.get(
+
     "image_path"
+
 )
 
 
 
 if not fits_path:
 
+
     st.error(
+
         "Aucun FITS temporaire trouvé."
+
     )
 
     st.stop()
 
 
 
+
 fits_path = Path(
+
     fits_path
+
 ).resolve()
 
 
 
 if not fits_path.exists():
 
+
     st.error(
+
         "Le fichier FITS n'existe plus."
+
     )
 
     st.stop()
 
 
 
+
 workdir = fits_path.parent
+
 
 
 
@@ -142,17 +178,23 @@ workdir = fits_path.parent
 # ==========================================================
 
 def safe_float(
+
     value,
+
     default=0
+
 ):
+
 
     try:
 
         return float(value)
 
+
     except Exception:
 
         return default
+
 
 
 
@@ -167,8 +209,11 @@ context = {
     "object":
 
         header.get(
+
             "OBJECT",
+
             "Inconnu"
+
         ),
 
 
@@ -176,10 +221,15 @@ context = {
     "ra":
 
         safe_float(
+
             header.get(
+
                 "RA",
+
                 0
+
             )
+
         ),
 
 
@@ -187,10 +237,15 @@ context = {
     "dec":
 
         safe_float(
+
             header.get(
+
                 "DEC",
+
                 0
+
             )
+
         ),
 
 
@@ -198,8 +253,11 @@ context = {
     "instrument":
 
         header.get(
+
             "INSTRUME",
+
             "Inconnu"
+
         ),
 
 
@@ -207,8 +265,11 @@ context = {
     "telescope":
 
         header.get(
+
             "TELESCOP",
+
             "Inconnu"
+
         ),
 
 
@@ -216,10 +277,15 @@ context = {
     "focal":
 
         safe_float(
+
             header.get(
+
                 "FOCALLEN",
+
                 0
+
             )
+
         ),
 
 
@@ -227,31 +293,45 @@ context = {
     "pixel":
 
         safe_float(
+
             header.get(
+
                 "XPIXSZ",
+
                 3.76
+
             ),
+
             3.76
+
         ),
 
 
 
     "fits_exposure":
 
-    safe_float(
-        header.get(
-            "EXPTIME",
-            0
-        )
-    ),
+        safe_float(
+
+            header.get(
+
+                "EXPTIME",
+
+                0
+
+            )
+
+        ),
 
 
 
     "gain":
 
         header.get(
+
             "GAIN",
+
             "?"
+
         ),
 
 
@@ -259,11 +339,15 @@ context = {
     "temperature":
 
         header.get(
+
             "CCD-TEMP",
+
             "?"
+
         )
 
 }
+
 
 
 
@@ -273,7 +357,9 @@ context = {
 # ==========================================================
 
 st.header(
+
     "📐 Champ photographié"
+
 )
 
 
@@ -297,6 +383,7 @@ st.session_state.fov = fov
 
 
 
+
 c1, c2, c3 = st.columns(3)
 
 
@@ -304,8 +391,11 @@ c1, c2, c3 = st.columns(3)
 with c1:
 
     st.metric(
+
         "Horizontal",
+
         f"{fov['fov_horizontal_deg']}°"
+
     )
 
 
@@ -313,8 +403,11 @@ with c1:
 with c2:
 
     st.metric(
+
         "Vertical",
+
         f"{fov['fov_vertical_deg']}°"
+
     )
 
 
@@ -322,9 +415,14 @@ with c2:
 with c3:
 
     st.metric(
+
         "Échantillonnage",
+
         f"{fov['sampling_arcsec_pixel']} arcsec/pixel"
+
     )
+
+
 
 
 
@@ -335,7 +433,9 @@ with c3:
 # ==========================================================
 
 st.header(
+
     "🌌 Analyse du champ"
+
 )
 
 
@@ -347,16 +447,24 @@ if "siril_result" not in st.session_state:
 
 
 
+
 if st.button(
+
     "🚀 Lancer analyse Siril",
+
     type="primary"
+
 ):
 
 
     progress = st.progress(
+
         0,
+
         text="Préparation..."
+
     )
+
 
 
 
@@ -366,31 +474,43 @@ if st.button(
 
 
 
+
+
     try:
 
 
         progress.progress(
+
             20,
+
             text="Préparation image..."
+
         )
 
 
 
         runner = SirilRunner(
+
             siril_path
+
         )
 
 
 
         analyser = SirilAnalyser(
+
             runner
+
         )
 
 
 
         progress.progress(
+
             40,
+
             text="Analyse astrométrique Siril..."
+
         )
 
 
@@ -408,8 +528,11 @@ if st.button(
 
 
         progress.progress(
+
             80,
-            text="Lecture catalogue..."
+
+            text="Filtrage catalogue..."
+
         )
 
 
@@ -418,19 +541,23 @@ if st.button(
 
 
 
+
         progress.progress(
+
             100,
-            text="Analyse terminée ✅"
+
+            text="Analyse Siril terminée ✅"
+
         )
 
 
 
-        count = len(
 
-            result.get(
-                "objects",
-                []
-            )
+        objects = result.get(
+
+            "objects",
+
+            []
 
         )
 
@@ -438,9 +565,10 @@ if st.button(
 
         st.success(
 
-            f"✅ Analyse terminée ({count} objets détectés)"
+            f"✅ Analyse terminée : {len(objects)} objets catalogués"
 
         )
+
 
 
 
@@ -448,6 +576,7 @@ if st.button(
 
 
         progress.empty()
+
 
 
         st.error(
@@ -461,12 +590,15 @@ if st.button(
 
 
 # ==========================================================
-# RESULTATS CATALOGUE
+# PREPARATION CONTEXTE IA
 # ==========================================================
 
 result = st.session_state.get(
+
     "siril_result",
+
     None
+
 )
 
 
@@ -479,84 +611,35 @@ if result:
 
 
     objects = result.get(
+
         "objects",
+
         []
-    )
-
-
-
-    st.subheader(
-
-        f"⭐ Objets détectés par Siril : {len(objects)}"
 
     )
 
 
 
-    if objects:
+    filtered_objects = filter_catalog(
 
+        objects,
 
-        filtered_objects = filter_catalog(
+        max_mag=16
 
-            objects,
-
-            max_mag=16
-
-        )
+    )
 
 
 
-        st.write(
+    st.info(
 
-            f"Objets retenus pour analyse IA : "
-            f"{len(filtered_objects)}"
+        f"⭐ Catalogue utilisé pour IA : {len(filtered_objects)} objets"
 
-        )
-
-
-
-        st.dataframe(
-
-            filtered_objects,
-
-            width="stretch"
-
-        )
-
-
-
-    else:
-
-
-        st.info(
-
-            "Aucun objet retourné par Siril."
-
-        )
+    )
 
 
 
     st.session_state.objects = filtered_objects
 
-
-
-
-
-
-# ==========================================================
-# PREPARATION CONTEXTE IA
-# ==========================================================
-
-st.divider()
-
-
-st.header(
-    "🧠 Analyse IA"
-)
-
-
-
-if result:
 
 
     summary = create_ai_summary(
@@ -580,52 +663,19 @@ if result:
             fov,
 
 
-        "objects":
+        "catalogue":
 
-            summary,
+            summary
 
-
-        "siril":
-
-            {
-
-
-                "csv":
-
-                    result.get(
-                        "csv",
-                        ""
-                    ),
-
-
-
-                "objects_detected":
-
-                    len(
-                        result.get(
-                            "objects",
-                            []
-                        )
-                    ),
-
-
-
-                "objects_selected":
-
-                    len(
-                        filtered_objects
-                    )
-
-            }
 
     }
 
 
 
     st.session_state.ai_context = ai_context
-    # ======================================================
-    # GENERATION RAPPORT IA
-    # ======================================================
+# ==========================================================
+# GENERATION RAPPORT IA
+# ==========================================================
 
 
     if st.button(
@@ -663,22 +713,19 @@ if result:
 
             # ==================================================
             # ETAPE 1
-            # CREATION UNIQUE PREVIEW VISION
+            # CREATION PREVIEW VISION
             # ==================================================
-
 
             progress_ai.progress(
 
                 15,
 
-                text="Création preview couleur pour LLaVA..."
+                text="Création preview LLaVA..."
 
             )
 
 
-            #
-            # UN SEUL APPEL ICI
-            #
+
             vision_path = create_vision_preview(
 
                 fits_path
@@ -697,6 +744,7 @@ if result:
 
             if not vision_path.exists():
 
+
                 raise FileNotFoundError(
 
                     f"Preview absente : {vision_path}"
@@ -713,70 +761,16 @@ if result:
 
 
 
-            st.success(
 
-                f"✅ Preview créée : {vision_path}"
+            # ==================================================
+            # DEBUG IMAGE LLaVA
+            # ==================================================
 
-            )
-
-
-
-            # DEBUG IMAGE ENVOYEE
             with st.expander(
 
-                "🖼️ Debug image envoyée à LLaVA"
+                "🖼️ Aperçu image analysée par LLaVA"
 
             ):
-
-
-                st.write(
-
-                    "FITS source :"
-
-                )
-
-
-                st.code(
-
-                    str(fits_path)
-
-                )
-
-
-
-                st.write(
-
-                    "PNG envoyé :"
-
-                )
-
-
-                st.code(
-
-                    str(vision_path)
-
-                )
-
-
-
-                st.write(
-
-                    "Existe :",
-
-                    vision_path.exists()
-
-                )
-
-
-
-                st.write(
-
-                    "Taille :",
-
-                    vision_path.stat().st_size
-
-                )
-
 
 
                 st.image(
@@ -791,11 +785,11 @@ if result:
 
 
 
+
             # ==================================================
             # ETAPE 2
-            # ANALYSE LLaVA
+            # ANALYSE VISUELLE
             # ==================================================
-
 
             progress_ai.progress(
 
@@ -829,12 +823,14 @@ if result:
 
             st.session_state.vision_result = vision_result
 
-        
+
+
+
+
             # ==================================================
             # ETAPE 3
-            # ANALYSE SCIENTIFIQUE QWEN
+            # ANALYSE SCIENTIFIQUE ASTRO IA
             # ==================================================
-
 
             progress_ai.progress(
 
@@ -857,17 +853,13 @@ if result:
                 ),
 
 
-
                 acquisition=context,
-
 
 
                 fov=fov,
 
 
-
                 simbad_data=ai_context,
-
 
 
                 workflow=st.session_state.get(
@@ -877,7 +869,6 @@ if result:
                     None
 
                 ),
-
 
 
                 vision_result=vision_result
@@ -914,10 +905,12 @@ if result:
 
 
 
+
         except Exception as e:
 
 
             progress_ai.empty()
+
 
 
             st.error(
@@ -925,6 +918,7 @@ if result:
                 f"Erreur IA : {e}"
 
             )
+
 
 
 
@@ -968,18 +962,24 @@ if vision_preview:
 
 
 
+
+
 # ==========================================================
 # AFFICHAGE RESULTAT LLaVA
 # ==========================================================
 
 
-if st.session_state.get(
+vision_result = st.session_state.get(
 
     "vision_result",
 
     None
 
-):
+)
+
+
+
+if vision_result:
 
 
     with st.expander(
@@ -991,9 +991,11 @@ if st.session_state.get(
 
         st.write(
 
-            st.session_state.vision_result
+            vision_result
 
         )
+
+
 
 
 
