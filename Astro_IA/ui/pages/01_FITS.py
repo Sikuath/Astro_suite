@@ -4,8 +4,23 @@ import shutil
 
 from core.fits_reader import read_fits_header
 from core.config import load_config
+from core.optic_detector import detect_optic
 
+# ==========================================================
+# FORMATAGE AFFICHAGE
+# ==========================================================
 
+def format_value(value, decimals=2):
+
+    try:
+
+        value = float(value)
+
+        return f"{value:.{decimals}f}".replace(".", ",")
+
+    except Exception:
+
+        return value
 
 # ==========================================================
 # NETTOYAGE DOSSIER TEMPORAIRE
@@ -310,8 +325,15 @@ if st.session_state.get(
 
 <br><br>
 
-<b>Télescope :</b><br>
-{header.get('TELESCOP','Inconnu')}
+<b>Optique :</b><br>
+{
+detect_optic(
+    header.get(
+        "FOCALLEN",
+        0
+    )
+)
+}
 
 <br><br>
 
