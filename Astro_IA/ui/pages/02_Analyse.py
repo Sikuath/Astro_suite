@@ -1102,7 +1102,7 @@ if result:
 
 
             st.session_state.analysis_result = response
-
+            st.session_state.analysis_context = context
 
             # ==================================================
             # CREATION PROJET ASTRO IA

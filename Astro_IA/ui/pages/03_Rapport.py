@@ -7,8 +7,8 @@
 
 import streamlit as st
 
+import json
 from datetime import datetime
-
 
 
 from pathlib import Path
@@ -1030,13 +1030,6 @@ st.download_button(
 
 )
 
-
-
-
-
-
-
-
 # ==========================================================
 # NAVIGATION
 # ==========================================================
@@ -1045,12 +1038,7 @@ st.download_button(
 st.divider()
 
 
-
-
-
 col1, col2 = st.columns(2)
-
-
 
 
 
@@ -1059,14 +1047,14 @@ with col1:
 
     if st.button(
 
-        "⬅ Retour analyse"
+        "⬅ Retour FITS"
 
     ):
 
 
         st.switch_page(
 
-            "ui/pages/02_Analyse.py"
+            "ui/pages/01_FITS.py"
 
         )
 
@@ -1079,9 +1067,152 @@ with col2:
 
     if st.button(
 
-        "🧭 Aller au workflow"
+        "🧭 Ouvrir Workflow"
 
     ):
+
+
+        # ==================================================
+        # SAUVEGARDE RAPPORT AVANT WORKFLOW
+        # ==================================================
+
+
+        project_path = st.session_state.get(
+            "project_path"
+        )
+
+
+        analysis = st.session_state.get(
+            "analysis_result",
+            None
+        )
+
+
+        if project_path and analysis:
+
+
+            reports_dir = Path(project_path) / "reports"
+
+
+            reports_dir.mkdir(
+                parents=True,
+                exist_ok=True
+            )
+
+
+
+            # -----------------------------
+            # TXT
+            # -----------------------------
+
+
+            txt_file = reports_dir / "rapport_IA.txt"
+
+
+            with open(
+                txt_file,
+                "w",
+                encoding="utf-8"
+            ) as f:
+
+                f.write(
+                    analysis
+                )
+
+
+
+            # -----------------------------
+            # JSON
+            # -----------------------------
+            context = st.session_state.get(
+                "analysis_context",
+                {}
+            )
+
+            json_file = reports_dir / "rapport_IA.json"
+
+
+
+            report_data = {
+
+
+                "date":
+
+                    datetime.now().isoformat(),
+
+
+
+                "objet":
+
+                    context.get(
+                        "object",
+                        "Inconnu"
+                    ),
+
+
+
+                "fits":
+
+                    context,
+
+
+
+                "fov":
+
+                    fov,
+
+
+
+                "vision":
+
+                    st.session_state.get(
+                        "vision_result",
+                        None
+                    ),
+
+
+
+                "rapport":
+
+                    analysis
+
+            }
+
+
+
+            with open(
+                json_file,
+                "w",
+                encoding="utf-8"
+            ) as f:
+
+
+                json.dump(
+
+                    report_data,
+
+                    f,
+
+                    indent=4,
+
+                    ensure_ascii=False
+
+                )
+
+
+
+            st.success(
+                "💾 Rapport sauvegardé dans le projet."
+            )
+
+
+        else:
+
+
+            st.warning(
+                "⚠️ Aucun rapport IA à sauvegarder."
+            )
+
 
 
         st.switch_page(

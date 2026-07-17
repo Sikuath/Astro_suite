@@ -336,99 +336,31 @@ def show_sidebar(config):
         # WORKFLOW PROJET
         # ==========================================
 
+        st.subheader("📂 Workflow")
 
-        st.subheader(
-
-            "📂 Workflow"
-
-        )
-
-
-
-        project_path = st.session_state.get(
-
-            "project_path"
-
-        )
-
-
+        project_path = st.session_state.get("project_path")
 
         if project_path:
 
-
             try:
 
+                summary = workflow_summary(project_path)
 
-                workflow = get_workflow(
-
-                    project_path
-
+                st.metric(
+                    "Progression",
+                    f"{summary['done']} / {summary['total']}"
                 )
 
+            except Exception:
 
-                summary = workflow_summary(
-
-                    project_path
-
-                )
-
-
-
-                st.caption(
-
-                    f"{summary['done']} / {summary['total']} étapes terminées"
-
-                )
-
-
-
-                for step in workflow:
-
-
-                    if step["done"]:
-
-
-                        st.success(
-
-                            f"✔ {step['name']}"
-
-                        )
-
-
-                    else:
-
-
-                        st.info(
-
-                            f"○ {step['name']}"
-
-                        )
-
-
-
-            except Exception as e:
-
-
-                st.warning(
-
-                    f"Workflow indisponible : {e}"
-
-                )
-
-
+                st.info("Workflow indisponible")
 
         else:
 
-
-            st.info(
-
-                "Aucun projet actif"
-
-            )
-
-
+            st.info("Aucun projet actif")
 
         st.divider()
+        
         # ==========================================
         # IA
         # ==========================================

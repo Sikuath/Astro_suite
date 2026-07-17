@@ -139,7 +139,7 @@ pages = {
 
             "ui/pages/00_Config.py",
 
-            title="⚙️ Configuration",
+            title="Configuration",
 
             icon="⚙️"
 
@@ -151,7 +151,7 @@ pages = {
 
             "ui/pages/01_FITS.py",
 
-            title="📷 FITS",
+            title="FITS",
 
             icon="📷"
 
@@ -163,7 +163,7 @@ pages = {
 
             "ui/pages/02_Analyse.py",
 
-            title="🤖 Analyse IA",
+            title="Analyse IA",
 
             icon="🤖"
 
@@ -175,7 +175,7 @@ pages = {
 
             "ui/pages/03_Rapport.py",
 
-            title="📋 Rapport",
+            title="Rapport",
 
             icon="📋"
 
@@ -187,7 +187,7 @@ pages = {
 
             "ui/pages/04_Workflow.py",
 
-            title="🧭 Workflow",
+            title="Workflow",
 
             icon="🧭"
 
