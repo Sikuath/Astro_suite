@@ -12,15 +12,12 @@ from datetime import datetime
 
 
 from pathlib import Path
-
 from core.project_manager import (
     create_project,
     set_active_project,
     get_active_project
 )
-
-
-
+from core.workflow_manager import get_workflow
 
 
 # ==========================================================
@@ -33,8 +30,11 @@ st.title(
     "📋 Rapport astrophotographique"
 
 )
-
-
+### debug a suppier les 3 lignes dessous
+#st.write(
+#    "DEBUG SESSION",
+#    st.session_state
+#)
 
 
 

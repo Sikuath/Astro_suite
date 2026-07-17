@@ -17,35 +17,31 @@ from datetime import datetime
 # ==========================================================
 
 
+from pathlib import Path
+
+
 def get_projects_root(workdir):
 
-
     if not workdir:
-
         return None
-
 
 
     workdir = Path(workdir).resolve()
 
 
-    root = (
+    # Si on est dans x_temp, remonter automatiquement
+    if workdir.name == "x_temp":
 
-        workdir.parent
+        root = workdir.parent / "x_projects"
 
-        /
+    else:
 
-        "x_projects"
-
-    )
+        root = workdir / "x_projects"
 
 
     root.mkdir(
-
         parents=True,
-
         exist_ok=True
-
     )
 
 

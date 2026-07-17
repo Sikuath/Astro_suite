@@ -59,17 +59,18 @@ workdir = st.session_state.get(
     "workdir"
 )
 
+if not workdir:
+
+    temp_dir = st.session_state.get("temp_dir")
 
 
-if workdir:
+    if temp_dir:
 
-    workdir = Path(
-        workdir
-    )
+        workdir = str(
+            Path(temp_dir).parent
+        )
 
-else:
-
-    workdir = None
+        st.session_state.workdir = workdir
 
 
 

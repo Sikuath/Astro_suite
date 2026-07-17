@@ -33,7 +33,11 @@ from core.vision_preview import create_vision_preview
 
 from core.simbad_client import query_object
 
-
+from core.project_manager import (
+    create_project,
+    set_active_project,
+    get_active_project
+)
 
 
 
@@ -1099,6 +1103,20 @@ if result:
 
             st.session_state.analysis_result = response
 
+
+            # ==================================================
+            # CREATION PROJET ASTRO IA
+            # ==================================================
+
+            project_path = create_project(
+                workdir,
+                context["object"]
+            )
+
+
+            st.session_state.project_path = str(
+                project_path
+            )
 
 
             st.session_state.analysis_ready = True
