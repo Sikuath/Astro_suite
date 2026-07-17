@@ -31,8 +31,6 @@ st.title(
 
 
 
-
-
 # ==========================================================
 # VERIFICATION PROJET
 # ==========================================================
@@ -59,7 +57,7 @@ if not project_path:
 
 
 # ==========================================================
-# CHARGEMENT ETAT PROJET
+# CHARGEMENT
 # ==========================================================
 
 
@@ -102,11 +100,7 @@ st.header(
 
 st.progress(
 
-    summary["progress"]
-
-    /
-
-    100
+    summary["progress"] / 100
 
 )
 
@@ -123,9 +117,7 @@ st.write(
 
 
 if project_state.get(
-
     "workflow_updated"
-
 ):
 
 
@@ -133,9 +125,7 @@ if project_state.get(
 
         "Dernière modification : "
 
-        +
-
-        project_state["workflow_updated"]
+        + project_state["workflow_updated"]
 
     )
 
@@ -150,86 +140,82 @@ st.divider()
 
 
 # ==========================================================
-# ETAPES
+# AFFICHAGE WORKFLOW PAR SECTION
 # ==========================================================
 
 
 st.header(
-    "🔭 Étapes Astro IA"
+    "🔭 Étapes de traitement"
 )
 
 
 
-for step in workflow:
+for section in workflow:
 
 
-    step_id = step["id"]
+    section_name = section.get(
+
+        "section",
+
+        "Workflow"
+
+    )
 
 
-    current = step["done"]
+    st.subheader(
 
-
-    label = step["name"]
-
-
-
-
-
-    if current:
-
-        display = (
-
-            "✅ "
-
-            +
-
-            label
-
-        )
-
-    else:
-
-        display = (
-
-            "⬜ "
-
-            +
-
-            label
-
-        )
-
-
-
-
-
-    value = st.checkbox(
-
-        display,
-
-        value=current,
-
-        key=f"workflow_{step_id}"
+        section_name
 
     )
 
 
 
+    for step in section.get(
+
+        "steps",
+
+        []
+
+    ):
 
 
-    if value != current:
+        step_id = step["id"]
+
+        current = step["done"]
+
+        label = step["name"]
 
 
-        toggle_step(
 
-            project_path,
+        value = st.checkbox(
 
-            step_id
+            label,
+
+            value=current,
+
+            key=f"workflow_{step_id}"
 
         )
 
 
-        st.rerun()
+
+        if value != current:
+
+
+            toggle_step(
+
+                project_path,
+
+                step_id
+
+            )
+
+
+            st.rerun()
+
+
+
+    st.divider()
 
 
 
@@ -242,15 +228,12 @@ for step in workflow:
 # ==========================================================
 
 
-st.divider()
-
-
-
 st.info(
 """
 Le workflow est enregistré dans le projet.
 
-Cette page sert uniquement au suivi de progression.
+Cette page sert uniquement au suivi manuel
+des étapes de traitement astrophotographique.
 
 Aucune analyse Siril, LLaVA ou Qwen3
 n'est relancée automatiquement.
@@ -259,6 +242,7 @@ Vous pouvez fermer Astro IA et reprendre
 plus tard exactement à cette étape.
 """
 )
+
 
 
 

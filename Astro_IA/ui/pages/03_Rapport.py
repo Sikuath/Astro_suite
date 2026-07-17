@@ -199,14 +199,13 @@ if project_path:
     report_done = False
 
 
+    for section in workflow:
 
-    for step in workflow:
+        for step in section.get("steps", []):
 
+            if step["id"] == "report":
 
-        if step["id"] == "rapport":
-
-
-            report_done = step["done"]
+                report_done = step["done"]
 
 
 
@@ -234,7 +233,7 @@ if project_path:
 
                 project_path,
 
-                "rapport"
+                "report"
 
             )
 

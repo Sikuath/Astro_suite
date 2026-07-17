@@ -14,94 +14,245 @@ from core.project_state import (
 
 
 
+
+
 # ==========================================================
-# WORKFLOW ASTRO IA PAR DEFAUT
+# WORKFLOW ASTROPHOTO
 # ==========================================================
 
 
 DEFAULT_WORKFLOW = [
 
+
     {
-        "id": "fits",
-        "name": "FITS validé",
-        "done": False
+        "section": "A - Siril",
+
+        "steps": [
+
+
+            {
+                "id": "siril_crop",
+                "name": "Recadrer l’image",
+                "done": False
+            },
+
+
+            {
+                "id": "siril_astrometry",
+                "name": "Résolution astrométrique",
+                "done": False
+            },
+
+
+            {
+                "id": "siril_gradient",
+                "name": "Extraction de gradient",
+                "done": False
+            },
+
+
+            {
+                "id": "siril_green",
+                "name": "Suppression du bruit vert",
+                "done": False
+            },
+
+
+            {
+                "id": "siril_photometry",
+                "name": "Etalonnage des couleurs par photométrie",
+                "done": False
+            },
+
+
+            {
+                "id": "abberration_remover",
+                "name": "Abberration Remover (script Python)",
+                "done": False
+            },
+
+
+            {
+                "id": "cosmicclarity",
+                "name": "CosmicClartity_Sharpen (script Python)",
+                "done": False
+            },
+
+
+            {
+                "id": "veralux",
+                "name": "Veralux_Silentium (script Python)",
+                "done": False
+            },
+
+
+            {
+                "id": "starless_creation",
+                "name": "Création de la starless",
+                "done": False
+            },
+
+
+            {
+                "id": "starless_stretch",
+                "name": "Etirement de la Starless",
+                "done": False
+            }
+
+        ]
     },
 
 
+
     {
-        "id": "siril",
-        "name": "Analyse du champ Siril",
-        "done": False
+        "section": "B - Gimp",
+
+        "steps": [
+
+
+            {
+                "id": "gimp_starless",
+                "name": "Traitement de la starless",
+                "done": False
+            },
+
+
+            {
+                "id": "gimp_levels",
+                "name": "Ajuster le niveau des couleurs",
+                "done": False
+            },
+
+
+            {
+                "id": "gimp_noise",
+                "name": "Réduction du bruit",
+                "done": False
+            },
+
+
+            {
+                "id": "gimp_colors",
+                "name": "Renforcer les couleurs",
+                "done": False
+            },
+
+
+            {
+                "id": "gimp_saturation",
+                "name": "Rehausser les couleurs",
+                "done": False
+            },
+
+
+            {
+                "id": "gimp_curve",
+                "name": "Traitement par courbe",
+                "done": False
+            },
+
+
+            {
+                "id": "gimp_highpass",
+                "name": "Filtre passe haut",
+                "done": False
+            },
+
+
+            {
+                "id": "gimp_balance",
+                "name": "Balance des couleurs",
+                "done": False
+            }
+
+        ]
     },
 
 
+
     {
-        "id": "catalog",
-        "name": "Filtrage catalogue objets",
-        "done": False
+        "section": "C - Siril",
+
+        "steps": [
+
+
+            {
+                "id": "stars_mask",
+                "name": "Travailler le masque d’étoiles",
+                "done": False
+            },
+
+
+            {
+                "id": "purple_remove",
+                "name": "Suppression zones violettes (inversion / bruit vert / inversion)",
+                "done": False
+            },
+
+
+            {
+                "id": "recompose",
+                "name": "Recomposition starless / masque d’étoiles",
+                "done": False
+            },
+
+
+            {
+                "id": "deconvolution",
+                "name": "Déconvolution éventuelle",
+                "done": False
+            }
+
+
+        ]
     },
 
 
-    {
-        "id": "simbad",
-        "name": "Enrichissement SIMBAD",
-        "done": False
-    },
-
 
     {
-        "id": "vision",
-        "name": "Analyse visuelle LLaVA",
-        "done": False
-    },
+        "section": "D - Gimp",
+
+        "steps": [
 
 
-    {
-        "id": "astro_ai",
-        "name": "Analyse scientifique Astro IA",
-        "done": False
-    },
+            {
+                "id": "gimp_finish",
+                "name": "Finition",
+                "done": False
+            },
+            {
+                "id": "report",
+                "name": "Rapport astrophotographique validé",
+                "done": False
+        }
 
-
-    {
-        "id": "report",
-        "name": "Rapport astrophotographique",
-        "done": False
-    },
-
-
-    {
-        "id": "processing",
-        "name": "Traitement de l'image finale",
-        "done": False
+        ]
     }
 
 ]
 
 
 
+
+
 # ==========================================================
-# INITIALISATION WORKFLOW
+# INITIALISATION
 # ==========================================================
 
 
 def init_workflow(project_path):
 
-    data = load_project_state(
-        project_path
-    )
+
+    data = load_project_state(project_path)
 
 
-    if not data.get("workflow"):
+    if "workflow" not in data:
 
 
         data["workflow"] = DEFAULT_WORKFLOW
 
 
-        data["workflow_updated"] = (
-            datetime.now()
-            .isoformat()
-        )
+        data["workflow_updated"] = datetime.now().isoformat()
 
 
         save_project_state(
@@ -119,28 +270,24 @@ def init_workflow(project_path):
 
 
 
+
+
 # ==========================================================
-# RECUPERATION WORKFLOW
+# RECUPERATION
 # ==========================================================
 
 
 def get_workflow(project_path):
 
-    data = load_project_state(
 
-        project_path
-
-    )
+    data = load_project_state(project_path)
 
 
     workflow = data.get(
 
-        "workflow",
-
-        []
+        "workflow"
 
     )
-
 
 
     if not workflow:
@@ -153,15 +300,16 @@ def get_workflow(project_path):
         )
 
 
-
     return workflow
 
 
 
 
 
+
+
 # ==========================================================
-# MODIFICATION D'UNE ETAPE
+# MODIFICATION
 # ==========================================================
 
 
@@ -176,11 +324,7 @@ def set_step(
 ):
 
 
-    data = load_project_state(
-
-        project_path
-
-    )
+    data = load_project_state(project_path)
 
 
     workflow = data.get(
@@ -193,32 +337,23 @@ def set_step(
 
 
 
-    for step in workflow:
+    for section in workflow:
 
 
-        if step["id"] == step_id:
+        for step in section.get("steps", []):
 
 
-            step["done"] = state
+            if step["id"] == step_id:
 
 
-            break
-
+                step["done"] = state
 
 
 
     data["workflow"] = workflow
 
 
-
-    data["workflow_updated"] = (
-
-        datetime.now()
-
-        .isoformat()
-
-    )
-
+    data["workflow_updated"] = datetime.now().isoformat()
 
 
     save_project_state(
@@ -236,7 +371,7 @@ def set_step(
 
 
 # ==========================================================
-# INVERSION D'UNE ETAPE
+# INVERSION
 # ==========================================================
 
 
@@ -249,33 +384,32 @@ def toggle_step(
 ):
 
 
-    workflow = get_workflow(
-
-        project_path
-
-    )
+    workflow = get_workflow(project_path)
 
 
 
-    for step in workflow:
+    for section in workflow:
 
 
-        if step["id"] == step_id:
+        for step in section.get("steps", []):
 
 
-
-            set_step(
-
-                project_path,
-
-                step_id,
-
-                not step["done"]
-
-            )
+            if step["id"] == step_id:
 
 
-            return
+                set_step(
+
+                    project_path,
+
+                    step_id,
+
+                    not step["done"]
+
+                )
+
+
+                return
+
 
 
 
@@ -287,114 +421,49 @@ def toggle_step(
 # ==========================================================
 
 
-def workflow_progress(
-
-    project_path
-
-):
+def workflow_summary(project_path):
 
 
-    workflow = get_workflow(
+    workflow = get_workflow(project_path)
 
-        project_path
 
-    )
+    total = 0
+
+    done = 0
 
 
 
-    if not workflow:
-
-        return 0
+    for section in workflow:
 
 
+        for step in section.get("steps", []):
 
 
+            total += 1
 
-    done = sum(
 
-        1
+            if step["done"]:
 
-        for step in workflow
-
-        if step["done"]
-
-    )
+                done += 1
 
 
 
-    return int(
-
-        done
-
-        /
-
-        len(workflow)
-
-        *
-
-        100
-
-    )
+    progress = 0
 
 
+    if total:
 
-
-
-
-
-# ==========================================================
-# RESUME WORKFLOW
-# ==========================================================
-
-
-def workflow_summary(
-
-    project_path
-
-):
-
-
-    workflow = get_workflow(
-
-        project_path
-
-    )
-
-
-
-    done = sum(
-
-        1
-
-        for step in workflow
-
-        if step["done"]
-
-    )
+        progress = int(done / total * 100)
 
 
 
     return {
 
 
-        "total":
+        "total": total,
 
-            len(workflow),
+        "done": done,
 
-
-
-        "done":
-
-            done,
-
-
-
-        "progress":
-
-            workflow_progress(
-
-                project_path
-
-            )
+        "progress": progress
 
     }
