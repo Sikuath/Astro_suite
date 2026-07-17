@@ -6,6 +6,8 @@
 
 import streamlit as st
 
+from pathlib import Path
+
 
 from core.workflow_manager import (
     get_workflow,
@@ -20,6 +22,8 @@ from core.project_state import (
 
 
 
+
+
 # ==========================================================
 # TITRE
 # ==========================================================
@@ -28,6 +32,8 @@ from core.project_state import (
 st.title(
     "🧭 Workflow astrophotographique"
 )
+
+
 
 
 
@@ -140,84 +146,175 @@ st.divider()
 
 
 # ==========================================================
-# AFFICHAGE WORKFLOW PAR SECTION
+# DISPOSITION 2 COLONNES
 # ==========================================================
 
 
-st.header(
-    "🔭 Étapes de traitement"
+left_col, right_col = st.columns(
+
+    [2, 3],
+
+    gap="large"
+
 )
 
 
 
-for section in workflow:
 
 
-    section_name = section.get(
+# ==========================================================
+# COLONNE GAUCHE
+# WORKFLOW
+# ==========================================================
 
-        "section",
 
-        "Workflow"
+with left_col:
 
+
+    st.header(
+        "🔭 Étapes de traitement"
     )
 
 
-    st.subheader(
 
-        section_name
-
-    )
+    for section in workflow:
 
 
 
-    for step in section.get(
+        section_name = section.get(
 
-        "steps",
+            "section",
 
-        []
-
-    ):
-
-
-        step_id = step["id"]
-
-        current = step["done"]
-
-        label = step["name"]
-
-
-
-        value = st.checkbox(
-
-            label,
-
-            value=current,
-
-            key=f"workflow_{step_id}"
+            "Workflow"
 
         )
 
 
 
-        if value != current:
+        st.subheader(
+
+            section_name
+
+        )
 
 
-            toggle_step(
 
-                project_path,
+        for step in section.get(
 
-                step_id
+            "steps",
+
+            []
+
+        ):
+
+
+
+            step_id = step["id"]
+
+
+            current = step["done"]
+
+
+            value = st.checkbox(
+
+                step["name"],
+
+                value=current,
+
+                key=f"workflow_{step_id}"
 
             )
 
 
-            st.rerun()
+
+            if value != current:
 
 
 
-    st.divider()
+                toggle_step(
+
+                    project_path,
+
+                    step_id
+
+                )
 
 
+                st.rerun()
+
+
+
+        st.divider()
+# ==========================================================
+# COLONNE DROITE
+# RAPPORT IA
+# ==========================================================
+
+
+with right_col:
+
+
+    st.header(
+        "🤖 Rapport IA"
+    )
+
+
+    report_file = (
+
+        Path(project_path)
+
+        /
+
+        "reports"
+
+        /
+
+        "rapport_IA.txt"
+
+    )
+
+
+
+    with st.expander(
+
+        "📄 Lire le rapport IA",
+
+        expanded=False
+
+    ):
+
+
+        if report_file.exists():
+
+
+            report_text = report_file.read_text(
+
+                encoding="utf-8"
+
+            )
+
+
+            st.text_area(
+
+                "Rapport",
+
+                report_text,
+
+                height=600,
+
+                label_visibility="collapsed"
+
+            )
+
+
+        else:
+
+
+            st.info(
+
+                "Aucun rapport IA enregistré."
+
+            )
 
 
 
@@ -226,6 +323,10 @@ for section in workflow:
 # ==========================================================
 # MESSAGE
 # ==========================================================
+
+
+st.divider()
+
 
 
 st.info(
@@ -255,13 +356,13 @@ plus tard exactement à cette étape.
 
 if st.button(
 
-    "⬅ Retour analyse"
+    "⬅ Retour"
 
 ):
 
 
     st.switch_page(
 
-        "ui/pages/02_Analyse.py"
+        "ui/pages/00_Config.py"
 
     )
