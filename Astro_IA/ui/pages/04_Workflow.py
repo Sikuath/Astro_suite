@@ -20,8 +20,80 @@ from core.project_state import (
     load_project_state
 )
 
+# ==========================================================
+# STYLE RAPPORT IA TRANSPARENT
+# ==========================================================
+
+st.markdown(
+    """
+<style>
+
+/* Zone texte rapport IA */
+div[data-testid="stTextArea"] textarea {
+
+    background:
+
+        rgba(10,15,30,0.55) !important;
 
 
+    color:
+
+        white !important;
+
+
+    border-radius:
+
+        12px;
+
+
+    border:
+
+        1px solid rgba(255,255,255,0.25);
+
+
+    backdrop-filter:
+
+        blur(8px);
+
+}
+
+
+/* Expander rapport */
+div[data-testid="stExpander"] {
+
+
+    background:
+
+        rgba(10,15,30,0.35);
+
+
+    border-radius:
+
+        15px;
+
+
+    border:
+
+        1px solid rgba(255,255,255,0.15);
+
+}
+
+
+
+div[data-testid="stExpander"] details summary {
+
+
+    color:
+
+        white;
+
+}
+
+
+</style>
+""",
+    unsafe_allow_html=True
+)
 
 
 # ==========================================================

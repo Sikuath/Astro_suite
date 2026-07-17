@@ -19,7 +19,6 @@ from core.project_manager import (
 )
 from core.workflow_manager import get_workflow
 
-
 # ==========================================================
 # TITRE
 # ==========================================================
