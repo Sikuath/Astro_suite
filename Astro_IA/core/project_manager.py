@@ -744,3 +744,55 @@ def restore_active_project(
 
 
     return None
+# ==========================================================
+# SUPPRESSION PROJET
+# ==========================================================
+
+
+def delete_project(project_path):
+
+
+    from pathlib import Path
+    import shutil
+
+
+
+    project_path = Path(
+
+        project_path
+
+    )
+
+
+
+    if not project_path.exists():
+
+        return False
+
+
+
+    try:
+
+
+        shutil.rmtree(
+
+            project_path
+
+        )
+
+
+        return True
+
+
+
+    except Exception as e:
+
+
+        print(
+
+            f"Erreur suppression projet : {e}"
+
+        )
+
+
+        return False

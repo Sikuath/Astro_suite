@@ -12,19 +12,17 @@ from pathlib import Path
 
 
 from core.config import (
-    load_config,
-    save_config,
-    restore_default
+    load_config
 )
 
 
 
 from core.project_manager import (
-    create_project,
     list_projects,
     set_active_project,
     get_active_project,
-    get_projects_root
+    get_projects_root,
+    delete_project
 )
 
 
@@ -41,6 +39,9 @@ st.title(
 )
 
 
+
+
+
 # ==========================================================
 # CHARGEMENT CONFIG
 # ==========================================================
@@ -50,8 +51,11 @@ config = load_config()
 
 
 
+
+
 # ==========================================================
 # DOSSIER DE TRAVAIL ACTIF
+# RESTAURATION JSON + SESSION
 # ==========================================================
 
 
@@ -59,23 +63,34 @@ workdir = st.session_state.get(
     "workdir"
 )
 
+
+
+# Si absent, chercher dans la configuration
+
 if not workdir:
 
-    temp_dir = st.session_state.get("temp_dir")
+
+    workdir = config.get(
+        "paths",
+        {}
+    ).get(
+        "images",
+        None
+    )
 
 
-    if temp_dir:
 
-        workdir = str(
-            Path(temp_dir).parent
-        )
+    if workdir:
+
 
         st.session_state.workdir = workdir
 
 
 
+
+
 # ==========================================================
-# GESTION PROJET
+# PROJET ASTROPHOTOGRAPHIQUE
 # ==========================================================
 
 
@@ -106,6 +121,9 @@ if workdir:
     )
 
 
+
+
+
 if projects_root:
 
 
@@ -124,15 +142,22 @@ else:
         """
 📂 Aucun dossier de traitement actif.
 
-Choisissez d'abord vos images dans la page FITS.
-Le dossier x_projects sera créé automatiquement
-à côté du dossier de traitement.
+Sélectionnez d'abord vos images dans la page FITS.
+Les projets seront créés automatiquement lors
+de la génération d'un rapport IA.
 """
 
     )
 
 
 
+
+
+
+
+# ==========================================================
+# PROJET ACTIF
+# ==========================================================
 
 
 active_project = get_active_project()
@@ -166,115 +191,7 @@ else:
 
 
 
-tab1, tab2 = st.tabs(
-
-    [
-
-        "➕ Nouveau projet",
-
-        "📁 Ouvrir un projet"
-
-    ]
-
-)
-
-
-
-
-
-
-
-# ==========================================================
-# CREATION NOUVEAU PROJET
-# ==========================================================
-
-
-with tab1:
-
-
-
-    project_name = st.text_input(
-
-        "Nom du projet",
-
-        placeholder="NGC6871_20260716"
-
-    )
-
-
-
-    object_name = st.text_input(
-
-        "Objet astronomique",
-
-        placeholder="NGC6871"
-
-    )
-
-
-
-
-
-
-    if st.button(
-
-        "🚀 Créer le projet",
-
-        type="primary"
-
-    ):
-
-
-
-        if project_name:
-
-
-
-            project_path = create_project(
-
-                workdir,
-
-                project_name,
-
-                object_name
-
-            )
-
-
-
-            set_active_project(
-
-                project_path
-
-            )
-
-
-
-            st.success(
-
-                f"✅ Projet créé : {project_path}"
-
-            )
-
-
-
-            st.rerun()
-
-
-
-        else:
-
-
-
-            st.warning(
-
-                "Nom de projet obligatoire."
-
-            )
-
-
-
-
+st.divider()
 
 
 
@@ -285,78 +202,216 @@ with tab1:
 # ==========================================================
 
 
-with tab2:
+st.subheader(
+
+    "📁 Ouvrir un projet existant"
+
+)
 
 
-    if not workdir:
 
 
-        st.info(
 
-            "📷 Sélectionnez d'abord un dossier FITS."
+if workdir:
+
+
+    projects = list_projects(
+
+        workdir
+
+    )
+
+
+else:
+
+
+    projects = []
+
+
+
+
+
+if projects:
+
+
+
+    selected = st.selectbox(
+
+        "Projet disponible",
+
+        projects
+
+    )
+
+
+
+
+
+    if st.button(
+
+        "📂 Charger ce projet"
+
+    ):
+
+
+
+        project_path = (
+
+            projects_root
+
+            /
+
+            selected
 
         )
 
 
-        projects = []
 
+        set_active_project(
 
-    else:
-
-
-        projects = list_projects(
-
-            workdir
+            project_path
 
         )
 
 
-    if projects:
 
+        st.success(
 
-
-        selected = st.selectbox(
-
-            "Projet disponible",
-
-            projects
+            f"✅ Projet chargé : {project_path}"
 
         )
+
+
+
+        st.rerun()
+
+
+
+
+
+else:
+
+
+    st.info(
+
+        "Aucun projet existant."
+
+    )
+
+
+
+
+
+
+
+# ==========================================================
+# SUPPRESSION PROJETS
+# ==========================================================
+
+
+st.divider()
+
+
+
+st.subheader(
+
+    "🧹 Supprimer des projets"
+
+)
+
+
+
+
+
+if projects:
+
+
+
+    delete_list = []
+
+
+
+    for project in projects:
+
+
+        if st.checkbox(
+
+            project,
+
+            key=f"delete_{project}"
+
+        ):
+
+
+            delete_list.append(
+
+                project
+
+            )
+
+
+
+
+
+    if delete_list:
+
+
+        st.warning(
+
+            f"{len(delete_list)} projet(s) sélectionné(s)"
+
+        )
+
 
 
 
 
         if st.button(
 
-            "📂 Ouvrir le projet"
+            "🗑️ Supprimer les projets sélectionnés",
+
+            type="primary"
 
         ):
 
 
 
-            project_path = (
-
-                projects_root
-
-                /
-
-                selected
-
-            )
+            deleted = 0
 
 
 
-            set_active_project(
+            for project in delete_list:
 
-                project_path
 
-            )
+
+                project_path = (
+
+                    projects_root
+
+                    /
+
+                    project
+
+                )
+
+
+
+                if delete_project(
+
+                    project_path
+
+                ):
+
+
+                    deleted += 1
+
+
 
 
 
             st.success(
 
-                f"✅ Projet chargé : {project_path}"
+                f"✅ {deleted} projet(s) supprimé(s)"
 
             )
 
@@ -368,28 +423,23 @@ with tab2:
 
 
 
-    else:
+else:
+
+
+    st.info(
+
+        "Aucun projet à supprimer."
+
+    )
 
 
 
-        st.info(
-
-            "Aucun projet existant."
-
-        )
 
 
-
-
-
-st.divider()
-# ==========================================================
-# FIN CONFIGURATION
-# ==========================================================
 
 
 # ==========================================================
-# INFORMATIONS PROJET
+# INFORMATIONS PROJET ACTIF
 # ==========================================================
 
 
@@ -401,16 +451,23 @@ if active_project:
 
 
     st.subheader(
+
         "📌 Informations projet actif"
+
     )
 
 
+
     st.write(
+
         f"**Chemin :** {active_project}"
+
     )
 
 
+
     st.write(
+
         """
 Le projet contient :
 
@@ -420,14 +477,19 @@ Le projet contient :
 - le workflow sauvegardé
 
 La reprise d'une session ne relance pas
-les analyses IA automatiquement.
+automatiquement les analyses IA.
 """
+
     )
 
 
 
+
+
+
+
 # ==========================================================
-# RETOUR WORKFLOW
+# NAVIGATION WORKFLOW
 # ==========================================================
 
 
@@ -438,9 +500,13 @@ st.divider()
 if active_project:
 
 
+
     if st.button(
+
         "🧭 Ouvrir le workflow"
+
     ):
+
 
 
         st.switch_page(
@@ -451,6 +517,10 @@ if active_project:
 
 
 
+
+
+
+
 # ==========================================================
 # RETOUR FITS
 # ==========================================================
@@ -458,7 +528,7 @@ if active_project:
 
 if st.button(
 
-    "📷 Aller vers FITS"
+    "📷 Nouveau Projet"
 
 ):
 
