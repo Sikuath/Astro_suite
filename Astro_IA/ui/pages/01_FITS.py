@@ -323,7 +323,7 @@ if fits_file:
 
 
         st.caption(
-            f"📁 Travail temporaire : {temp_path}"
+            f"📁 Dossier temporaire : {temp_path}"
         )
 
 
@@ -486,22 +486,6 @@ detect_optic(
             """,
             unsafe_allow_html=True
         )
-
-
-
-# ==========================================================
-# HEADER COMPLET
-# ==========================================================
-
-    with st.expander(
-        "Afficher le header FITS complet"
-    ):
-
-
-        st.json(
-            dict(header)
-        )
-
 
 
 # ==========================================================
