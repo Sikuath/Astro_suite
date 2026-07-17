@@ -7,20 +7,78 @@ from core.config import load_config
 from core.optic_detector import detect_optic
 
 # ==========================================================
-# FORMATAGE AFFICHAGE
+# FORMATAGE VALEURS FITS
 # ==========================================================
 
 def format_value(value, decimals=2):
+
+    if value is None:
+        return "Inconnu"
 
     try:
 
         value = float(value)
 
-        return f"{value:.{decimals}f}".replace(".", ",")
+        return (
+            f"{value:.{decimals}f}"
+            .replace(".", ",")
+        )
 
     except Exception:
 
-        return value
+        return str(value)
+
+def format_ra(header):
+
+    if header.get("OBJCTRA"):
+
+        return header["OBJCTRA"]
+
+    try:
+
+        ra = float(header.get("RA"))
+
+        total_hours = ra / 15
+
+        h = int(total_hours)
+
+        m = int((total_hours-h)*60)
+
+        s = ((total_hours-h)*60-m)*60
+
+        return f"{h:02d}h {m:02d}m {s:05.2f}s"
+
+    except:
+
+        return "?"
+
+
+
+def format_dec(header):
+
+    if header.get("OBJCTDEC"):
+
+        return header["OBJCTDEC"]
+
+    try:
+
+        dec = float(header.get("DEC"))
+
+        sign = "+" if dec >= 0 else "-"
+
+        dec = abs(dec)
+
+        d = int(dec)
+
+        m = int((dec-d)*60)
+
+        s = ((dec-d)*60-m)*60
+
+        return f"{sign}{d:02d}° {m:02d}' {s:05.2f}\""
+
+    except:
+
+        return "?"
 
 # ==========================================================
 # NETTOYAGE DOSSIER TEMPORAIRE
@@ -338,12 +396,9 @@ detect_optic(
 <br><br>
 
 <b>Focale :</b><br>
-{header.get('FOCALLEN','?')} mm
+{format_value(header.get('FOCALLEN','?'))} mm
 
-<br><br>
 
-<b>Temps pose :</b><br>
-{header.get('EXPTIME','?')} s
 
 </div>
 
@@ -371,7 +426,7 @@ detect_optic(
 <br><br>
 
 <b>Pixel :</b><br>
-{header.get('XPIXSZ','?')} × {header.get('YPIXSZ','?')} µm
+{format_value(header.get('XPIXSZ','?'))} × {format_value(header.get('YPIXSZ','?'))} µm
 
 <br><br>
 
@@ -386,7 +441,7 @@ detect_optic(
 <br><br>
 
 <b>CCD :</b><br>
-{header.get('CCD-TEMP','?')} °C
+{format_value(header.get('CCD-TEMP','?'))} °C
 
 </div>
 
@@ -409,12 +464,12 @@ detect_optic(
 </div>
 
 <b>RA :</b><br>
-{header.get('RA','?')}
+{format_ra(header)}
 
 <br><br>
 
 <b>DEC :</b><br>
-{header.get('DEC','?')}
+{format_dec(header)}
 
 <br><br>
 
