@@ -47,17 +47,31 @@ L'objectif est de construire un workflow cohérent, reproductible et entièremen
 
 # 🧩 Organisation générale
 
-Astro_suite est composé de plusieurs modules complémentaires :
+Astro Suite est un environnement complet dédié au traitement astrophotographique.
 
-```
-Astro_suite
+L'objectif est de proposer une chaîne de travail cohérente basée principalement sur :
 
-├── Astro_pretraitement
-│
-└── Astro_IA
-```
+- Siril pour le prétraitement et les opérations scientifiques
+- GIMP pour le traitement artistique final
+- Astro_Pretraitement pour la préparation des acquisitions
+- Astro_Studio pour le traitement avancé des images intégrées
+- Astro_IA pour l'analyse et l'aide au traitement
 
-Chaque module possède son propre rôle dans le workflow astrophotographique.
+La philosophie générale est :
+Acquisition
+↓
+Astro_Pretraitement
+↓
+Siril
+↓
+Astro_Studio
+↓
+GIMP
+↓
+Astro_IA
+
+Astro Suite ne cherche pas à remplacer les logiciels spécialisés.
+Elle organise et automatise le workflow astrophotographique.
 
 ---
 
@@ -78,6 +92,58 @@ Il permet :
 - visualisation rapide des acquisitions
 - rejet manuel des images
 - lancement automatique des scripts Siril
+
+Organisation de l'arboresence :
+
+├── B
+│ └── flats
+│
+├── biases
+│
+├── cache
+│
+├── darks
+│
+├── G
+│ └── flats
+│
+├── H
+│ └── flats
+│
+├── L
+│ └── flats
+│
+├── Lights
+│
+├── Lights_trash
+│
+├── O
+│ └── flats
+│
+├── R
+│ └── flats
+│
+├── S
+│ └── flats
+│
+├── x_projects
+│
+│ ├── exports
+│ ├── fits
+│ ├── logs
+│ ├── previews
+│ └── reports
+│
+└── x_temp
+
+commande PowerSheel/Invite de commande pour créer l'arboresence : 
+
+mkdir B\flats biases cache darks G\flats H\flats L\flats Lights Lights_trash O\flats R\flats S\flats x_projects\exports x_projects\fits x_projects\logs x_projects\previews x_projects\reports x_temp
+
+Pour le prétraitement placer les darks et biases (offset) dans les deux dossiers. Les flats doivent se trouver dans le dossier correspondant de chaque filtre.
+Placer les lights (quelque soit le filtre) dans le dossier Lights
+
+Le prétraitement détectera le type SHO/LSHO/LRGB et fabriquera les 3 fichiers des couches correspondantes
 
 ---
 
@@ -459,63 +525,6 @@ Fonctionnalités :
 - consultation rapports IA
 - interface transparente
 - thème astrophotographique
-
----
-# 🧩 Architecture du projet
-
-Organisation générale :
-
-```text
-Astro_suite
-
-│
-├── Astro_pretraitement
-│
-│   ├── app.py
-│   │
-│   ├── core
-│   │   ├── config.py
-│   │   ├── fits_loader.py
-│   │   ├── fits_metadata.py
-│   │   ├── preview.py
-│   │   ├── reject.py
-│   │   └── session_analyzer.py
-│   │
-│   ├── scripts
-│   │   ├── Alignement_lights.ssf
-│   │   ├── Traitement_SHO.ssf
-│   │   ├── Traitement_LSHO.ssf
-│   │   └── Traitement_LRGB.ssf
-│   │
-│   └── ui
-│       ├── sidebar.py
-│       └── theme.py
-│
-│
-├── Astro_IA
-│
-│   ├── app.py
-│   │
-│   ├── core
-│   │   ├── fits_io.py
-│   │   ├── siril_runner.py
-│   │   ├── siril_analyser.py
-│   │   ├── ollama_client.py
-│   │   ├── vision_client.py
-│   │   ├── simbad_client.py
-│   │   ├── workflow_manager.py
-│   │   └── project_manager.py
-│   │
-│   ├── ui
-│   │   ├── pages
-│   │   ├── sidebar.py
-│   │   └── theme.py
-│   │
-│   └── reports
-│
-│
-└── README.md
-```
 
 ---
 
