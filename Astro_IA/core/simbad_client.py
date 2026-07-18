@@ -9,8 +9,15 @@ from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 
 from astropy import units as u
+from astroquery.simbad import Simbad
+import warnings
+from astroquery.exceptions import NoResultsWarning
 
 
+warnings.filterwarnings(
+    "ignore",
+    category=NoResultsWarning
+)
 
 
 

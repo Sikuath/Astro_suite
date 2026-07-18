@@ -184,74 +184,6 @@ if not project_path:
     st.stop()
 
 
-
-if project_path:
-
-
-    workflow = get_workflow(
-
-        project_path
-
-    )
-
-
-    report_done = False
-
-
-    for section in workflow:
-
-        for step in section.get("steps", []):
-
-            if step["id"] == "report":
-
-                report_done = step["done"]
-
-
-
-    if report_done:
-
-
-        st.success(
-
-            "✅ Rapport déjà validé dans le workflow."
-
-        )
-
-
-    else:
-
-
-        if st.button(
-
-            "✅ Valider le rapport dans le workflow"
-
-        ):
-
-
-            toggle_step(
-
-                project_path,
-
-                "report"
-
-            )
-
-
-            st.success(
-
-                "Rapport ajouté au workflow."
-
-            )
-
-
-            st.rerun()
-
-
-
-
-
-
-
 # ==========================================================
 # RECUPERATION DONNEES
 # ==========================================================
@@ -1010,24 +942,6 @@ FIN DU RAPPORT
 
 """
 
-
-
-
-
-
-st.download_button(
-
-    "⬇ Télécharger le rapport TXT",
-
-    report_text,
-
-    file_name=
-
-        f"rapport_{header.get('OBJECT','astro')}.txt",
-
-    mime="text/plain"
-
-)
 
 # ==========================================================
 # NAVIGATION

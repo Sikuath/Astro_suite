@@ -118,6 +118,17 @@ header = st.session_state.get(
 
 )
 
+# ==========================================================
+# CONTEXTE CELESTE ASTRO IA
+# ==========================================================
+
+astro_context = st.session_state.get(
+
+    "celestial_context",
+
+    {}
+
+)
 
 
 
@@ -768,36 +779,21 @@ if result:
 
     ai_context = {
 
+    "fits": context,
 
-        "fits":
+    "fov": fov,
 
-            context,
+    "astro_context": astro_context,
 
+    "catalogue": filtered_objects,
 
+    "catalogue_summary": summary,
 
-        "fov":
+    "simbad": simbad_vocab,
 
-            fov,
+    "objects_count": len(filtered_objects)
 
-
-
-        "catalogue":
-
-            summary,
-
-
-
-        "simbad":
-
-            simbad_vocab,
-
-
-
-        "objects_count":
-
-            len(filtered_objects)
-
-    }
+}
 
 
 
@@ -1080,7 +1076,9 @@ if result:
 
                     None
 
-                )
+                ),
+
+                astro_context=astro_context
 
             )
 

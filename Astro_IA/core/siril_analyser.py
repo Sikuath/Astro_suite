@@ -96,7 +96,11 @@ class SirilAnalyser:
         if not success:
 
             raise RuntimeError(
-                "Analyse Siril échouée"
+
+                "Analyse Siril échouée\n\n"
+                +
+                "\n".join(logs)
+
             )
 
 
@@ -147,7 +151,8 @@ class SirilAnalyser:
 
 
         # -------------------------------------------------
-        # lecture JSON Siril
+        # lecture JSON Siril / Astro IA
+        # sélection du JSON le plus récent
         # -------------------------------------------------
 
         json_candidates = [
@@ -159,6 +164,36 @@ class SirilAnalyser:
             workdir / "siril.json"
 
         ]
+
+
+        # Recherche des sessions Astro IA horodatées
+
+        astro_json_files = sorted(
+
+            workdir.glob(
+
+                "astro_session_*.json"
+
+            ),
+
+            key=lambda f: f.stat().st_mtime,
+
+            reverse=True
+
+        )
+
+
+        # Le plus récent devient prioritaire
+
+        if astro_json_files:
+
+            json_candidates.insert(
+
+                0,
+
+                astro_json_files[0]
+
+            )
 
 
 

@@ -91,20 +91,11 @@ def normalize(value):
 
         .lower()
 
-        .replace(
-            "_",
-            ""
-        )
+        .replace("_", "")
 
-        .replace(
-            "-",
-            ""
-        )
+        .replace("-", "")
 
-        .replace(
-            " ",
-            ""
-        )
+        .replace(" ", "")
 
     )
 
@@ -144,9 +135,8 @@ def get_magnitude(obj):
 
             try:
 
-                return float(
-                    obj[key]
-                )
+                return float(obj[key])
+
 
             except:
 
@@ -188,10 +178,7 @@ def get_type(obj):
 
         if key in obj:
 
-
-            return str(
-                obj[key]
-            )
+            return str(obj[key])
 
 
 
@@ -226,16 +213,13 @@ def get_name(obj):
     ]
 
 
-
     for key in keys:
 
 
         if key in obj:
 
 
-            value = str(
-                obj[key]
-            )
+            value = str(obj[key])
 
 
             if value.strip():
@@ -249,6 +233,57 @@ def get_name(obj):
 
 
 # ==========================================================
+# DETECTION ETOILE PROBABLE
+# ==========================================================
+
+
+def looks_like_star(obj):
+
+
+    name = get_name(obj).upper()
+
+
+    mag = get_magnitude(obj)
+
+
+
+    # Catalogue Gaia / HD / BD / TYC
+    # avec position + magnitude
+    # = très probablement étoile
+
+
+    star_catalogs = [
+
+        "HD",
+
+        "BD",
+
+        "TYC",
+
+        "GSC",
+
+        "UCAC",
+
+        "GAIA"
+
+    ]
+
+
+
+    for catalog in star_catalogs:
+
+
+        if name.startswith(catalog):
+
+            return True
+
+
+
+    return False
+
+
+
+# ==========================================================
 # OBJET CATALOGUE
 # ==========================================================
 
@@ -256,19 +291,14 @@ def get_name(obj):
 def is_catalog_object(obj):
 
 
-    name = get_name(
-        obj
-    ).upper().strip()
+    name = get_name(obj).upper().strip()
 
 
 
     for pattern in CATALOG_PATTERNS:
 
 
-        if re.match(
-            pattern,
-            name
-        ):
+        if re.match(pattern, name):
 
             return True
 
@@ -286,11 +316,8 @@ def is_catalog_object(obj):
 def is_deep_sky(obj):
 
 
-    obj_type = normalize(
+    obj_type = normalize(get_type(obj))
 
-        get_type(obj)
-
-    )
 
 
     for t in DEEP_SKY_TYPES:
@@ -314,11 +341,8 @@ def is_deep_sky(obj):
 def is_star(obj):
 
 
-    obj_type = normalize(
+    obj_type = normalize(get_type(obj))
 
-        get_type(obj)
-
-    )
 
 
     for t in STAR_TYPES:
@@ -330,7 +354,7 @@ def is_star(obj):
 
 
 
-    return False
+    return looks_like_star(obj)
 
 
 
@@ -381,8 +405,6 @@ def object_score(obj):
 
 
 
-    # pénalité étoiles
-
     if is_star(obj):
 
         score -= 20
@@ -417,15 +439,8 @@ def filter_catalog(
 
 
 
-        mag = get_magnitude(
-            obj
-        )
+        mag = get_magnitude(obj)
 
-
-
-        # -----------------------------
-        # magnitude limite
-        # -----------------------------
 
 
         if mag is not None:
@@ -435,15 +450,6 @@ def filter_catalog(
 
                 continue
 
-
-
-        # -----------------------------
-        # garder :
-        #
-        # - objets profonds
-        # - objets catalogue
-        # - quelques étoiles brillantes
-        # -----------------------------
 
 
         if (
@@ -508,29 +514,17 @@ def create_ai_summary(objects):
     lines = []
 
 
+
     for obj in objects:
 
 
+        name = get_name(obj)
 
-        name = get_name(
-            obj
-        )
+        obj_type = get_type(obj)
 
+        mag = get_magnitude(obj)
 
-        obj_type = get_type(
-            obj
-        )
-
-
-        mag = get_magnitude(
-            obj
-        )
-
-
-
-        score = object_score(
-            obj
-        )
+        score = object_score(obj)
 
 
 
@@ -560,6 +554,4 @@ def create_ai_summary(objects):
 
 
 
-    return "\n".join(
-        lines
-    )
+    return "\n".join(lines)
