@@ -106,3 +106,4 @@ webencodings==0.5.1
 websockets==16.1
 yarg==0.1.10
 zarr==3.2.1
+astroplan==0.10.1

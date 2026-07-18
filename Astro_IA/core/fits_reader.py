@@ -6,12 +6,14 @@ def read_fits_header(filepath):
 
     """
     Lecture du header FITS
+
     Retourne un dictionnaire exploitable par Astro IA
     """
 
     filepath = Path(filepath)
 
     if not filepath.exists():
+
         return {
             "error": "Fichier introuvable"
         }
@@ -26,72 +28,216 @@ def read_fits_header(filepath):
 
             data = {
 
-                # Objet
+
+                # ==================================================
+                # OBJET
+                # ==================================================
+
                 "OBJECT":
-                    header.get("OBJECT", "Inconnu"),
+                    header.get(
+                        "OBJECT",
+                        "Inconnu"
+                    ),
 
 
-                # Date
+
+                # ==================================================
+                # DATE
+                # ==================================================
+
                 "DATE-OBS":
-                    header.get("DATE-OBS", "Inconnue"),
+                    header.get(
+                        "DATE-OBS",
+                        "Inconnue"
+                    ),
 
 
-                # Instrument
+
+                # ==================================================
+                # INSTRUMENT
+                # ==================================================
+
                 "TELESCOP":
-                    header.get("TELESCOP", "Inconnu"),
+                    header.get(
+                        "TELESCOP",
+                        "Inconnu"
+                    ),
 
 
                 "INSTRUME":
-                    header.get("INSTRUME", "Inconnu"),
+                    header.get(
+                        "INSTRUME",
+                        "Inconnu"
+                    ),
 
 
-                # Optique
+
+                # ==================================================
+                # OPTIQUE
+                # ==================================================
+
                 "FOCALLEN":
-                    header.get("FOCALLEN", "Inconnue"),
+                    header.get(
+                        "FOCALLEN",
+                        "Inconnue"
+                    ),
 
 
-                # Caméra
+
+                # ==================================================
+                # CAMERA
+                # ==================================================
+
                 "XPIXSZ":
-                    header.get("XPIXSZ", "Inconnue"),
+                    header.get(
+                        "XPIXSZ",
+                        "Inconnue"
+                    ),
 
 
                 "YPIXSZ":
-                    header.get("YPIXSZ", "Inconnue"),
+                    header.get(
+                        "YPIXSZ",
+                        "Inconnue"
+                    ),
 
 
-                # Acquisition
+
+                # ==================================================
+                # ACQUISITION
+                # ==================================================
+
                 "EXPTIME":
-                    header.get("EXPTIME",
-                               header.get("EXPOSURE",
-                               "Inconnue")),
+                    header.get(
+                        "EXPTIME",
+                        header.get(
+                            "EXPOSURE",
+                            "Inconnue"
+                        )
+                    ),
 
 
                 "GAIN":
-                    header.get("GAIN", "Inconnu"),
+                    header.get(
+                        "GAIN",
+                        "Inconnu"
+                    ),
 
 
                 "OFFSET":
-                    header.get("OFFSET", "Inconnu"),
+                    header.get(
+                        "OFFSET",
+                        "Inconnu"
+                    ),
 
 
                 "FILTER":
-                    header.get("FILTER", "Inconnu"),
+                    header.get(
+                        "FILTER",
+                        "Inconnu"
+                    ),
 
 
-                # Coordonnées
+
+                # ==================================================
+                # TEMPERATURE
+                # ==================================================
+
+                "CCD-TEMP":
+                    header.get(
+                        "CCD-TEMP",
+                        header.get(
+                            "CCD_TEMP",
+                            "Inconnue"
+                        )
+                    ),
+
+
+
+                # ==================================================
+                # COORDONNEES CELESTES
+                # ==================================================
+
                 "RA":
-                    header.get("RA", "Inconnue"),
+                    header.get(
+                        "RA",
+                        "Inconnue"
+                    ),
 
 
                 "DEC":
-                    header.get("DEC", "Inconnue"),
+                    header.get(
+                        "DEC",
+                        "Inconnue"
+                    ),
 
 
-                # Température
-                "CCD-TEMP":
-                    header.get("CCD-TEMP",
-                               header.get("CCD_TEMP",
-                               "Inconnue"))
+                # Coordonnées sexagésimales utiles
+                "OBJCTRA":
+                    header.get(
+                        "OBJCTRA",
+                        ""
+                    ),
+
+
+                "OBJCTDEC":
+                    header.get(
+                        "OBJCTDEC",
+                        ""
+                    ),
+
+
+
+                # ==================================================
+                # SITE OBSERVATION
+                # ==================================================
+
+                "SITELAT":
+                    header.get(
+                        "SITELAT",
+                        None
+                    ),
+
+
+                "SITELONG":
+                    header.get(
+                        "SITELONG",
+                        None
+                    ),
+
+
+                "SITEELEV":
+                    header.get(
+                        "SITEELEV",
+                        0
+                    ),
+
+
+
+                # ==================================================
+                # STACK / SESSION
+                # ==================================================
+
+                "STACKCNT":
+                    header.get(
+                        "STACKCNT",
+                        0
+                    ),
+
+
+                "LIVETIME":
+                    header.get(
+                        "LIVETIME",
+                        0
+                    ),
+
+
+                "ASTMODE":
+                    header.get(
+                        "ASTMODE",
+                        ""
+                    )
+
 
             }
 
@@ -99,7 +245,9 @@ def read_fits_header(filepath):
             return data
 
 
+
     except Exception as e:
+
 
         return {
             "error": str(e)

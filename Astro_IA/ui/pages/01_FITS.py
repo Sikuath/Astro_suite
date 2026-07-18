@@ -7,6 +7,10 @@ import json
 from core.fits_reader import read_fits_header
 from core.config import load_config
 from core.optic_detector import detect_optic
+from core.astro_context import (
+    build_astro_context,
+    inject_astro_context
+)
 
 
 # ==========================================================
@@ -488,6 +492,33 @@ if fits_file:
         st.session_state.fits_header = header
 
 
+        # ======================================================
+        # CONTEXTE CELESTE ASTRO IA
+        # ======================================================
+
+        try:
+
+            celestial = build_astro_context(
+                header
+            )
+
+            inject_astro_context(
+                celestial,
+                config["paths"]["data_sessions"]
+            )
+
+            st.session_state.celestial_context = celestial
+
+
+        except Exception as e:
+
+            st.warning(
+                f"Contexte céleste indisponible : {e}"
+            )
+
+            st.session_state.celestial_context = {}
+
+        
         st.success(
             "✅ FITS lu correctement"
         )
@@ -670,7 +701,7 @@ detect_optic(
 <br><br>
 
 
-<b>Télescope :</b><br>
+<b>Monture :</b><br>
 {header.get('TELESCOP','Inconnu')}
 
 
@@ -874,47 +905,93 @@ unsafe_allow_html=True
     with col4:
 
 
+        celestial = session_data.get(
+            "celestial",
+            {}
+        )
+
+
+        ephem = celestial.get(
+            "ephemeris",
+            {}
+        )
+
+
+        obj = celestial.get(
+            "object",
+            {}
+        )
+
+
         st.markdown(
 
-f"""
+    f"""
 
-<div class="fits-info">
-
-
-<div class="fits-title">
-🌌 Céleste
-</div>
+    <div class="fits-info">
 
 
-<b>RA :</b><br>
-{format_ra(header)}
+    <div class="fits-title">
+    🌌 Céleste
+    </div>
 
 
-<br><br>
+    <b>Objet :</b><br>
+    {obj.get("input_name","?")}
 
 
-<b>DEC :</b><br>
-{format_dec(header)}
+    <br><br>
 
 
-<br><br>
+    <b>Constellation :</b><br>
+    {obj.get("constellation","?")}
 
 
-<b>Date :</b><br>
-{header.get('DATE-OBS','?')}
+    <br><br>
 
 
-<br><br>
+    <b>RA :</b><br>
+    {format_ra(header)}
 
 
-<b>Filtre :</b><br>
-{header.get('FILTER','Inconnu')}
+    <br><br>
 
 
-</div>
+    <b>DEC :</b><br>
+    {format_dec(header)}
 
-""",
 
-unsafe_allow_html=True
+    <br><br>
 
-        )
+
+    <b>Altitude :</b><br>
+    {ephem.get("target",{}).get("altitude_deg","?")}°
+
+
+    <br><br>
+
+
+    <b>Masse d'air :</b><br>
+    {ephem.get("target",{}).get("airmass","?")}
+
+
+    <br><br>
+
+
+    <b>Nuit astronomique :</b><br>
+    {ephem.get("sun",{}).get("astronomical_night","?")}
+
+
+    <br><br>
+
+
+    <b>Lune / cible :</b><br>
+    {ephem.get("moon",{}).get("distance_target_deg","?")}°
+
+
+    </div>
+
+    """,
+
+    unsafe_allow_html=True
+
+    )

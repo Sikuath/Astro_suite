@@ -1,6 +1,0 @@
-astropy
-numpy
-scipy
-streamlit
-pipreqs
-streamlit-shortcuts
