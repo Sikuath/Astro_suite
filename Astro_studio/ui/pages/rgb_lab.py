@@ -7,7 +7,7 @@ from core.rgb_export import (
 )
 
 from core.preview import make_preview
-
+from core.fits_metadata import update_final_header
 
 
 def show_rgb_lab():
@@ -85,7 +85,10 @@ def show_rgb_lab():
                 B,
                 workdir
             )
-
+            update_final_header(
+            image_finale,
+            workdir
+            )
 
             st.success(
                 f"RGB_final créé : {image_finale}"

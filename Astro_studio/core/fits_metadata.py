@@ -18,19 +18,63 @@ def update_final_header(
         )
 
 
-    hdr_values = {}
+    # ==================================================
+    # Détection des couches disponibles
+    # ==================================================
 
+    possible_layers = [
 
-    layers = [
-        "HA_linear.fit",
-        "OIII_linear.fit",
-        "SII_linear.fit"
+        [
+            "HA_linear.fit",
+            "OIII_linear.fit",
+            "SII_linear.fit"
+        ],
+
+        [
+            "L_linear.fit",
+            "R_linear.fit",
+            "G_linear.fit",
+            "B_linear.fit"
+        ]
+
     ]
 
 
+    layers = []
+
+
+    for candidate in possible_layers:
+
+        if all(
+            (workdir / f).exists()
+            for f in candidate
+        ):
+
+            layers = candidate
+            break
+
+
+
+    if not layers:
+
+        raise RuntimeError(
+            "Aucune couche linear trouvée"
+        )
+
+
+
+    hdr_values = {}
+
+
     total_live = 0
+
     total_stack = 0
 
+
+
+    # ==================================================
+    # Lecture des headers couches
+    # ==================================================
 
     for layer in layers:
 
@@ -38,58 +82,84 @@ def update_final_header(
         file = workdir / layer
 
 
-        if not file.exists():
-            continue
-
-
         hdr = fits.getheader(file)
 
 
+
         total_live += float(
+
             hdr.get(
                 "LIVETIME",
-                0
+                hdr.get(
+                    "EXPTIME",
+                    0
+                )
             )
+
         )
 
 
+
         total_stack += int(
+
             hdr.get(
                 "STACKCNT",
                 1
             )
+
         )
 
 
+
+        # première couche comme référence
+
         if not hdr_values:
 
+
             for key in [
+
                 "OBJECT",
                 "DATE-OBS",
+
                 "TELESCOP",
                 "FOCALLEN",
+
                 "INSTRUME",
+
                 "GAIN",
                 "OFFSET",
+
                 "CCD-TEMP",
+
                 "RA",
                 "DEC",
+
                 "OBJCTRA",
                 "OBJCTDEC"
+
             ]:
 
                 if key in hdr:
+
                     hdr_values[key] = hdr[key]
 
 
 
+    # ==================================================
+    # Injection dans RGB_final.fit
+    # ==================================================
+
     with fits.open(
+
         rgb_file,
+
         mode="update"
+
     ) as hdul:
 
 
         header = hdul[0].header
+
 
 
         for key, value in hdr_values.items():
@@ -99,20 +169,38 @@ def update_final_header(
 
 
         header["STACKCNT"] = (
+
             total_stack,
+
             "Nombre poses combinees"
+
         )
 
 
         header["LIVETIME"] = (
+
             total_live,
+
             "Temps integration total secondes"
+
+        )
+
+
+        header["ASTMODE"] = (
+
+            "SHO" if "HA_linear.fit" in layers else "LRGB",
+
+            "Mode Astro Suite"
+
         )
 
 
         header["ASTROAPP"] = (
+
             "Astro Suite",
+
             "Logiciel traitement"
+
         )
 
 

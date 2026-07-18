@@ -4,6 +4,7 @@ import shutil
 from core.lrgb_pipeline_guard import LRGBPipelineGuard
 from core.siril_runner import SirilRunner
 from core.prepare_lrgb_sequence import prepare_lrgb_sequence
+from core.session_exporter import run_session_export
 
 
 
@@ -203,6 +204,31 @@ class LRGBPipelineManager:
             shutil.rmtree(process_dir)
 
         print("Temporary process directory removed.")
+
+    # =========================================================
+    # EXPORT SESSION ASTRO IA
+    # =========================================================
+
+    def export_ai_session(self):
+
+        output_dir = (
+
+            self.workdir
+            /
+            "x_projects"
+            /
+            "data_sessions"
+
+        )
+
+
+        return run_session_export(
+
+            self.workdir,
+
+            output_dir
+
+        )
 
     # =========================================================
     # STEP 0
@@ -686,7 +712,32 @@ class LRGBPipelineManager:
             "✔ Linear Match done"
         )
 
+        # =====================================================
+        # STEP 7 EXPORT ASTRO IA
+        # =====================================================
 
+        log(
+            "🧠 STEP 7 - Export Astro IA session"
+        )
+
+
+        try:
+
+
+            json_file = self.export_ai_session()
+
+
+            log(
+                f"✔ Session exportée : {json_file}"
+            )
+
+
+        except Exception as e:
+
+
+            log(
+                f"⚠ Astro IA export failed : {e}"
+            )
 
 
         if progress_callback:
@@ -700,7 +751,7 @@ class LRGBPipelineManager:
         # ==========================
 
         log(
-            "🧹 STEP 7 - Cleaning temporary folders"
+            "🧹 STEP 8 - Cleaning temporary folders"
         )
 
 
