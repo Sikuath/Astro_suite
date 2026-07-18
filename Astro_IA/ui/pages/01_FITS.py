@@ -71,11 +71,6 @@ def format_time(seconds):
 
 def format_ra(header):
 
-    if header.get("OBJCTRA"):
-
-        return header["OBJCTRA"]
-
-
     try:
 
         ra = float(
@@ -85,15 +80,21 @@ def format_ra(header):
 
         total_hours = ra / 15
 
+
         h = int(total_hours)
 
-        m = int(
-            (total_hours-h)*60
-        )
+
+        minutes = (
+            total_hours - h
+        ) * 60
+
+
+        m = int(minutes)
+
 
         s = (
-            (total_hours-h)*60-m
-        )*60
+            minutes - m
+        ) * 60
 
 
         return (
@@ -103,7 +104,7 @@ def format_ra(header):
         )
 
 
-    except:
+    except Exception:
 
         return "?"
 
@@ -111,11 +112,6 @@ def format_ra(header):
 
 
 def format_dec(header):
-
-    if header.get("OBJCTDEC"):
-
-        return header["OBJCTDEC"]
-
 
     try:
 
@@ -136,13 +132,18 @@ def format_dec(header):
 
         d = int(dec)
 
-        m = int(
-            (dec-d)*60
-        )
+
+        minutes = (
+            dec - d
+        ) * 60
+
+
+        m = int(minutes)
+
 
         s = (
-            (dec-d)*60-m
-        )*60
+            minutes - m
+        ) * 60
 
 
         return (
@@ -152,7 +153,7 @@ def format_dec(header):
         )
 
 
-    except:
+    except Exception:
 
         return "?"
 
@@ -507,6 +508,14 @@ if fits_file:
                 config["paths"]["data_sessions"]
             )
 
+            #recharge la session mise à jour
+            session_data = load_session_json(
+                config
+            )
+
+
+            st.session_state.session_data = session_data
+
             st.session_state.celestial_context = celestial
 
 
@@ -764,7 +773,7 @@ f"""
 <br><br>
 
 
-<b>CCD :</b><br>
+<b>Température capteur CCD :</b><br>
 {format_value(header.get('CCD-TEMP'))} °C
 
 
@@ -905,8 +914,9 @@ unsafe_allow_html=True
     with col4:
 
 
+        # récupération contexte Astro IA
         celestial = session_data.get(
-            "celestial",
+            "astro_context",
             {}
         )
 
@@ -923,75 +933,134 @@ unsafe_allow_html=True
         )
 
 
+        coords = celestial.get(
+            "coordinates",
+            {}
+        )
+
+
+        galactic = coords.get(
+            "galactic",
+            {}
+        )
+
+
+        target = ephem.get(
+            "target",
+            {}
+        )
+
+
+        sun = ephem.get(
+            "sun",
+            {}
+        )
+
+
+        moon = ephem.get(
+            "moon",
+            {}
+        )
+
+
+
         st.markdown(
 
-    f"""
+f"""
 
-    <div class="fits-info">
-
-
-    <div class="fits-title">
-    🌌 Céleste
-    </div>
+<div class="fits-info">
 
 
-    <b>Objet :</b><br>
-    {obj.get("input_name","?")}
+<div class="fits-title">
+🌌 Céleste
+</div>
 
 
-    <br><br>
+
+<b>Objet :</b><br>
+{obj.get("input_name","Inconnu")}
 
 
-    <b>Constellation :</b><br>
-    {obj.get("constellation","?")}
+
+<br><br>
 
 
-    <br><br>
+<b>Constellation :</b><br>
+{obj.get("constellation","Inconnue")}
 
 
-    <b>RA :</b><br>
-    {format_ra(header)}
+
+<br><br>
 
 
-    <br><br>
+<b>Coordonnées équatoriales :</b><br>
+RA :
+{format_ra(header)}
+
+<br>
+
+DEC :
+{format_dec(header)}
 
 
-    <b>DEC :</b><br>
-    {format_dec(header)}
+
+<br><br>
 
 
-    <br><br>
+<b>Coordonnées galactiques :</b><br>
+l = {galactic.get("longitude_deg","?")}°<br>
+b = {galactic.get("latitude_deg","?")}°
 
 
-    <b>Altitude :</b><br>
-    {ephem.get("target",{}).get("altitude_deg","?")}°
+
+<br><br>
 
 
-    <br><br>
+<b>Position ciel :</b><br>
+Altitude : {target.get("altitude_deg","?")}°<br>
+Azimut : {target.get("azimuth_deg","?")}°
 
 
-    <b>Masse d'air :</b><br>
-    {ephem.get("target",{}).get("airmass","?")}
+
+<br><br>
 
 
-    <br><br>
+<b>Masse d'air :</b><br>
+{target.get("airmass","?")}
 
 
-    <b>Nuit astronomique :</b><br>
-    {ephem.get("sun",{}).get("astronomical_night","?")}
+
+<br><br>
 
 
-    <br><br>
+<b>Soleil :</b><br>
+Hauteur : {sun.get("altitude_deg","?")}°<br>
+Nuit astronomique :
+{"Oui" if sun.get("astronomical_night") else "Non"}
 
 
-    <b>Lune / cible :</b><br>
-    {ephem.get("moon",{}).get("distance_target_deg","?")}°
+
+<br><br>
 
 
-    </div>
+<b>Lune :</b><br>
+Hauteur : {moon.get("altitude_deg","?")}°<br>
+Azimut : {moon.get("azimuth_deg","?")}°
 
-    """,
 
-    unsafe_allow_html=True
 
-    )
+<br><br>
+
+
+<b>Distance Lune / cible :</b><br>
+{moon.get("distance_target_deg","?")}°
+
+
+
+</div>
+
+""",
+
+unsafe_allow_html=True
+
+        )
