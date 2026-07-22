@@ -1,4 +1,5 @@
 {
     "lights_folder": "C:\\Users\\yoye_\\Pictures\\Astrophoto\\Traitement\\Lights",
-    "rejected_folder": "C:\\Users\\yoye_\\Pictures\\Astrophoto\\Traitement\\Lights_trash"
+    "rejected_folder": "C:\\Users\\yoye_\\Pictures\\Astrophoto\\Traitement\\Lights_trash",
+    "siril_path": "C:\\Program Files\\Siril\\bin\\siril-cli.exe"
 }
